@@ -6,8 +6,10 @@ plugins {
 
 group = 'com.mock-rc8'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+sourceCompatibility = 1.9
+targetCompatibility = 1.9
 
+compileJava.options.encoding = 'UTF-8'
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
