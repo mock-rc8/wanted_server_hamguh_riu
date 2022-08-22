@@ -1,13 +1,13 @@
 package com.mockrc8.app.domain.user.service;
 
-import com.mockrc8.app.domain.user.dto.UserRegisterRequestDto;
-import com.mockrc8.app.domain.user.dto.UserRegisterResponseDto;
+import com.mockrc8.app.domain.user.dto.*;
 import com.mockrc8.app.domain.user.mapper.UserMapper;
 import com.mockrc8.app.domain.user.vo.User;
 import com.mockrc8.app.global.error.ErrorCode;
 import com.mockrc8.app.global.error.exception.User.EmailDuplicationException;
 import com.mockrc8.app.global.error.exception.User.PasswordNotMatchException;
 import com.mockrc8.app.global.error.exception.User.PhoneNumberDuplicationException;
+import com.mockrc8.app.global.error.exception.User.UserNotFoundException;
 import com.mockrc8.app.global.util.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -44,5 +44,44 @@ public class UserService {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    public ResponseEntity<EmailValidationResponseDto> validateEmail(String email) {
+        final int result = userMapper.checkEmail(email);
+        if(result == 1){
+            final EmailValidationResponseDto dto = EmailValidationResponseDto.builder()
+                    .isSuccess(true)
+                    .code("이메일 확인에 성공했습니다. 로그인 페이지로 리다이렉트 해주세요")
+                    .redirectPage("/login")
+                    .email(email)
+                    .build();
+            return new ResponseEntity<>(dto,HttpStatus.OK);
+        }else{
+            final EmailValidationResponseDto dto = EmailValidationResponseDto.builder()
+                    .isSuccess(true)
+                    .code("이메일 확인에 실패했습니다. 회원가입 페이지로 리다이렉트 해주세요")
+                    .redirectPage("/sign-up")
+                    .email(email)
+                    .build();
+            return new ResponseEntity<>(dto,HttpStatus.OK);
+        }
 
+    }
+
+    @Transactional
+    public ResponseEntity<UserLoginResponseDto> loginUser(UserLoginRequestDto userLoginRequestDto) {
+        final User user = userMapper.findUserByEmail(userLoginRequestDto.getUserEmail());
+        if (user == null) {
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+        if (!passwordEncoder.matches(userLoginRequestDto.getUserPassword(), user.getPassword())) {
+            throw new PasswordNotMatchException(ErrorCode.PASSWORD_NOT_MATCH);
+        }
+        String refreshToken = jwtService.createRefreshToken();
+        int result = userMapper.updateRefreshToken(user.getUser_id(), refreshToken);
+        UserLoginResponseDto response = new UserLoginResponseDto(
+                user.getUser_id(),
+                user.getEmail(),
+                jwtService.createJwt(user.getEmail()),
+                refreshToken);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class User {
-    private Long userId;
+    private Long user_id;
     private String name;
     private String email;
     private String password;
