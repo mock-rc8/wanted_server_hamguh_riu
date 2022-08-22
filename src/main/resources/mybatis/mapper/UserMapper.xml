@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mockrc8.app.domain.user.mapper.UserMapper">
+    <insert id="registerUser" parameterType="com.mockrc8.app.domain.user.vo.User" >
+        insert into user(name, password, email, phone_number) values (#{name}, #{password}, #{email}, #{phone_number})
+    </insert>
+
+    <select id="checkEmail" parameterType="String" resultType="Integer">
+        select exists(select email from user where email = #{userEmail})
+    </select>
+
+    <select id="checkPhoneNumber" parameterType="String" resultType="Integer">
+        select exists(select phone_number from user where phone_number = #{userPhoneNumber})
+    </select>
+
+</mapper>

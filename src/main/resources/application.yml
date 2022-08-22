@@ -1,1 +1,62 @@
+server:
+  port: 9000
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
 
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
+#    password: ${jasypt.encryptor.password}
+
+spring:
+  application:
+    name: wanted-server
+
+  datasource:
+    url: jdbc:mysql://wook2-rds.c7vimhuuowv7.ap-northeast-2.rds.amazonaws.com/WantedDB?autoReconnect=true
+    username: admin
+    password: ENC(QTAiVvnawsT6rdz4sDZE9h9lRIRtJfqA)
+#    password: 79267926
+    driver-class-name: com.mysql.cj.jdbc.Driver # mysql 8버전
+
+
+  security:
+    user:
+      name: user
+      password: test
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: 40497aa481ce3faa7ef3251506a95bf5
+            redirect-uri: http://localhost:9000/oauth/kakao # http://localhost:8080/login/oauth2/code/kakao
+            client-authentication-method: POST
+            authorization-grant-type: authorization_code
+            scope: profile_nickname, profile_image, account_email
+            client-name: Kakao
+        provider:
+          kakao:
+            authorization_uri: https://kauth.kakao.com/oauth/authorize
+            token_uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user_name_attribute: id
+  sql:
+    init:
+      platform: mysql
+
+mybatis:
+  type-aliases-package: com.mockrc8.app.domain.user.dto, com.mockrc8.app.domain.user.vo
+  mapper-locations: mybatis/mapper/**/*.xml
+  configuration:
+    jdbc-type-for-null: 'NULL'
+
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+
+secret.jwt_key :  ENC(6x+KiFvHW/2XYWyFtEg/hKibc2c56qGg)
+secret.db_key  :  ENC(8nb/IMUjJAC79s4NMyfyEXdgh29IvbLa)
+#secret.jwt_key :  7926
+#secret.db_key  :  7926
