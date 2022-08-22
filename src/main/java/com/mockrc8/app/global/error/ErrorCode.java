@@ -16,8 +16,20 @@ public enum ErrorCode {
     LOGIN_INPUT_INVALID(400, "U002", "Login input is invalid"),
     USER_NOT_FOUND(400,"U003", "User Not Found"),
     PASSWORD_NOT_MATCH(400,"U004", "Password Not Match"),
-    PHONE_NUMBER_DUPLICATION(400, "U005","이미 존재하는 핸드폰 번호입니다")
-    ;
+    PHONE_NUMBER_DUPLICATION(400, "U005","이미 존재하는 핸드폰 번호입니다"),
+
+    //Company
+    COMPANY_NOT_EXIST(400, "COM001", "Company not exists"),
+    COMPANY_TAG_NOT_EXIST(400, "COM002", "CompanyTag not exists"),
+
+
+    //Employment
+    EMPLOYMENT_NOT_EXIST(400, "E001", "Employment not exists"),
+    EMPLOYMENT_TECH_SKILL_NOT_EXIST(400, "E002","EmploymentTechSkill not exists"),
+
+    //Image
+    IMAGE_NOT_EXIST(400, "I001", "Image not exists");
+
 
     private final int status;
     private final String code;
