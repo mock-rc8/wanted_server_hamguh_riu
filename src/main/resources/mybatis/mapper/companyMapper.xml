@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mockrc8.app.domain.company.mapper.CompanyMapper" >
+
+    <select id="selectAll" resultType="com.mockrc8.app.domain.company.model.Company">
+        select company_id, image_url, name, description from company
+    </select>
+
+
+    <select id="selectById" resultType="com.mockrc8.app.domain.company.model.Company">
+        select company_id, image_url, name, description from company where company_id = #{companyId}
+    </select>
+
+    <insert id="registerCompany">
+        INSERT INTO company (image_url, name, description) VALUES (#{company.imageUrl}, #{company.name}, #{company.description})
+    </insert>
+
+</mapper>
+
