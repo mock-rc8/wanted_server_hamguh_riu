@@ -1,6 +1,7 @@
 package com.mockrc8.app.domain.company.mapper;
 
 import com.mockrc8.app.domain.company.dto.*;
+import com.mockrc8.app.domain.company.vo.CompanyDetailVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -26,5 +27,9 @@ public interface CompanyMapper {
 
     //company_news
     List<CompanyNews> getCompanyNewsListByCompanyId(Long companyId);
+
+
+
+    CompanyDetailVo getCompanyJoinedTable(Long companyId);
 
 }

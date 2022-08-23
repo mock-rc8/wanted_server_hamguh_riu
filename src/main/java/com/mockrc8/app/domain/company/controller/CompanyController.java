@@ -6,6 +6,7 @@ import com.mockrc8.app.domain.company.dto.Company;
 import com.mockrc8.app.domain.company.dto.CompanyNews;
 import com.mockrc8.app.domain.company.dto.CompanyTag;
 import com.mockrc8.app.domain.company.dto.Image;
+import com.mockrc8.app.domain.company.vo.CompanyDetailVo;
 import com.mockrc8.app.domain.employment.service.EmploymentService;
 import com.mockrc8.app.domain.employment.dto.Employment;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,12 @@ public class CompanyController {
     private EmploymentService employmentService;
 
 
+
+
+    @GetMapping("/allInfo")
+    public ResponseEntity<CompanyDetailVo> getCompanyJoinedTableInfo(){
+        return companyService.getCompanyJoinedTableInfo();
+    }
     @GetMapping()
     public ResponseEntity<List<Company>> getCompanyList(){
         List<Company> companyList = companyService.getCompanyList();
