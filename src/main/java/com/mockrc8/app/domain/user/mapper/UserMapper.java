@@ -10,4 +10,6 @@ public interface UserMapper {
     public long registerUser(User userVO);
     public int checkEmail(String userEmail);
     public int checkPhoneNumber(String userPhoneNumber);
+    public User findUserByEmail(String userEmail);
+    public int updateRefreshToken(@Param("userId") Long userId, @Param("refreshToken") String refreshToken);
 }
