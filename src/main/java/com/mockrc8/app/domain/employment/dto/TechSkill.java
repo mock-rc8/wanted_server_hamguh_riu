@@ -1,4 +1,4 @@
-package com.mockrc8.app.domain.employment.model;
+package com.mockrc8.app.domain.employment.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

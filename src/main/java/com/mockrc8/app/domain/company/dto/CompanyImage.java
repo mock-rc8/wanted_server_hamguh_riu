@@ -1,4 +1,4 @@
-package com.mockrc8.app.domain.company.model;
+package com.mockrc8.app.domain.company.dto;
 
 import lombok.*;
 
@@ -9,5 +9,5 @@ import lombok.*;
 public class CompanyImage {
     private Long companyImageId;
     private Long companyId;
-    private Long ImageId;
+    private Long imageId;
 }

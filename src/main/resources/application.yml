@@ -47,7 +47,7 @@ spring:
       platform: mysql
 
 mybatis:
-  type-aliases-package: com.mockrc8.app.domain.user.dto, com.mockrc8.app.domain.user.vo
+  type-aliases-package: com.mockrc8.app.domain.**.dto, com.mockrc8.app.domain.**.vo
   mapper-locations: mybatis/mapper/**/*.xml
   configuration:
     jdbc-type-for-null: 'NULL'

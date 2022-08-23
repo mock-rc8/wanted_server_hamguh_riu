@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mockrc8.app.domain.employment.mapper.EmploymentMapper">
+
+
+    <resultMap id="EmploymentDto" type="Employment">
+        <result property="employmentId" column="employment_id"/>
+        <result property="companyId" column="company_id"/>
+        <result property="title" column="title"/>
+        <result property="context" column="context"/>
+        <result property="deadline" column="deadline"/>
+        <result property="country" column="country"/>
+        <result property="location" column="location"/>
+        <result property="referralCompensation" column="referral_compensation"/>
+        <result property="userCompensation" column="user_compensation"/>
+    </resultMap>
+
+    <resultMap id="ReducedEmploymentDto" type="Employment">
+        <result property="employmentId" column="employment_id"/>
+        <result property="title" column="title"/>
+        <result property="deadline" column="deadline"/>
+        <result property="referralCompensation" column="referral_compensation"/>
+        <result property="userCompensation" column="user_compensation"/>
+    </resultMap>
+
+
+<!--    EmploymentImage-->
+    <resultMap id="EmploymentImageDto" type="EmploymentImage">
+        <result property="employmentImageId" column="employment_image_id"/>
+        <result property="employmentId" column="employment_id"/>
+        <result property="imageId" column="image_id"/>
+    </resultMap>
+
+
+<!--    EmploymentTechSkill-->
+    <resultMap id="EmploymentTechSkillDto" type="EmploymentTechSkill">
+        <result property="employmentTechSkillId" column="employment_tech_skill_id"/>
+        <result property="employmentId" column="employment_id"/>
+        <result property="techSkillId" column="tech_skill_id"/>
+    </resultMap>
+
+
+<!--    TechSkill-->
+    <resultMap id="TechSkillDto" type="TechSkill">
+        <result property="techSkillId" column="tech_skill_id"/>
+        <result property="techSkillName" column="name"/>
+    </resultMap>
+
+
+
+    <select id="getReducedEmploymentListByCompanyId" parameterType="Long" resultMap="ReducedEmploymentDto">
+        select * from employment where company_id = #{companyId}
+    </select>
+
+    <select id="getEmploymentListByCompanyTagName" parameterType="Map" resultMap="EmploymentDto">
+        select * from employment where company_id in (select company_id from company_tag where hashtag_name like #{companyTagName}) and employment_id != #{employmentId} limit #{count}
+    </select>
+
+    <select id="getEmploymentList" resultMap="EmploymentDto">
+        select * from employment
+    </select>
+
+    <select id="getEmploymentById" parameterType="Long" resultMap="EmploymentDto">
+        select * from employment where employment_id = #{employmentId}
+    </select>
+
+<!--    채용 id 체크-->
+    <select id="checkEmploymentId" parameterType="Long" resultType="Integer">
+        select if( exists( select * from employment where employment_id = #{employmentId} ), 1, 0)
+    </select>
+
+
+
+    <select id="getEmploymentImageListByCompanyId" parameterType="Long" resultMap="EmploymentImageDto">
+        select * from employment_image where employment_id = #{employmentId}
+    </select>
+
+
+
+<!--    employment_tech_skill -->
+    <select id="checkEmploymentTechSkillByEmploymentId" parameterType="Long" resultType="Integer">
+        select if( exists( select * from employment_tech_skill where employment_id = #{employmentId}), 1, 0)
+    </select>
+
+
+    <select id="getEmploymentTechSkillListByEmploymentId" parameterType="Long" resultMap="EmploymentTechSkillDto">
+        select * from employment_tech_skill where employment_id = #{employmentId}
+    </select>
+
+
+<!--    tech_skill -->
+    <select id="getTechSkillById" parameterType="Long" resultMap="TechSkillDto">
+        select * from tech_skill where tech_skill_id = #{techSkillId}
+    </select>
+
+</mapper>

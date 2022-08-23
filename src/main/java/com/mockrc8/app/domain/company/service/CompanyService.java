@@ -1,9 +1,8 @@
-package com.mockrc8.app.domain.company;
+package com.mockrc8.app.domain.company.service;
 
-import com.mockrc8.app.domain.company.model.*;
-import com.mockrc8.app.domain.employment.model.Employment;
+import com.mockrc8.app.domain.company.mapper.CompanyMapper;
+import com.mockrc8.app.domain.company.dto.*;
 import com.mockrc8.app.global.error.exception.company.CompanyNotExistException;
-import com.mockrc8.app.global.error.exception.company.CompanyTagNotExistException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,31 +16,29 @@ import static com.mockrc8.app.global.error.ErrorCode.*;
 @AllArgsConstructor
 public class CompanyService {
 
-    private CompanyDao companyDao;
+    private CompanyMapper companyMapper;
 
     public List<Company> getCompanyList(){
-        if(companyDao.checkCompanyListExist() == 0){
-            throw new CompanyNotExistException(COMPANY_NOT_EXIST);
-        }
-
-        return companyDao.getCompanyList();
+        List<Company> companyList = companyMapper.getCompanyList();
+        return companyList;
     }
 
 
     public Company getCompanyById(Long companyId){
-        if(companyDao.checkCompanyId(companyId) == 0){
+        if(companyMapper.checkCompanyId(companyId) == 0){
             throw new CompanyNotExistException(COMPANY_NOT_EXIST);
         }
 
-        return companyDao.getCompanyById(companyId);
+        return companyMapper.getCompanyById(companyId);
     }
 
 
     public Long registerCompany(Company company){
 
-        Long companyId = companyDao.registerCompany(company);
+        companyMapper.registerCompany(company);
 
-        if(companyDao.checkCompanyId(companyId) == 0){
+        Long companyId = company.getCompanyId();
+        if(companyMapper.checkCompanyId(companyId) == 0){
             throw new CompanyNotExistException(COMPANY_NOT_EXIST);
         }
 
@@ -58,30 +55,29 @@ public class CompanyService {
 //        }
 //    }
 
+    /*
+    company_image && image
+     */
     public List<Image> getCompanyImageListByCompanyId(Long companyId){
-//        if(companyDao.checkCompanyImageByCompanyId(companyId) == 0){
-//            throw new
-//        }
-        List<CompanyImage> companyImageList = companyDao.getCompanyImageListByCompanyId(companyId);
+
+        List<CompanyImage> companyImageList = companyMapper.getCompanyImageListByCompanyId(companyId);
 
         Iterator<CompanyImage> it = companyImageList.iterator();
         List<Image> imageList = new ArrayList<>();
         while(it.hasNext()){
             CompanyImage companyImage = it.next();
-            imageList.add(companyDao.getImageById(companyImage.getImageId()));
+            imageList.add(companyMapper.getImageById(companyImage.getImageId()));
         }
 
         return imageList;
     }
 
 
+    /*
+    company_tag
+     */
     public List<CompanyTag> getCompanyTagListByCompanyId(Long companyId){
-
-//        if(companyDao.checkCompanyTagByCompanyId(companyId) == 0){
-//            throw new CompanyTagNotExistException(COMPANY_TAG_NOT_EXIST);
-//        }
-
-        return companyDao.getCompanyTagListByCompanyId(companyId);
+        return companyMapper.getCompanyTagListByCompanyId(companyId);
     }
 
 
@@ -89,15 +85,6 @@ public class CompanyService {
     company_news
      */
     public List<CompanyNews> getCompanyNewsListByCompanyId(Long companyId){
-
-        return companyDao.getCompanyNewsListByCompanyId(companyId);
-    }
-
-
-    /*
-    company가 등록한 employment 축약 정보 목록
-     */
-    public List<Employment> getEmploymentListByCompanyId(Long companyId){
-        return companyDao.getEmploymentListByCompanyId(companyId);
+        return companyMapper.getCompanyNewsListByCompanyId(companyId);
     }
 }

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mockrc8.app.domain.company.mapper.CompanyMapper">
+
+    <resultMap id="CompanyDto" type="Company">
+        <result property="companyId" column="company_id"/>
+        <result property="imageUrl" column="image_url"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+    </resultMap>
+
+
+
+<!--    CompanyImage-->
+    <resultMap id="CompanyImageDto" type="CompanyImage">
+        <result property="companyImageId" column="company_image_id"/>
+        <result property="companyId" column="company_image_id"/>
+        <result property="imageId" column="image_id"/>
+    </resultMap>
+
+<!--    Image-->
+    <resultMap id="ImageDto" type="Image">
+        <result property="imageId" column="image_id"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="imageUrl" column="image_url"/>
+    </resultMap>
+
+<!--    CompanyTag-->
+    <resultMap id="CompanyTagDto" type="CompanyTag">
+        <result property="companyTagId" column="hashtag_id"/>
+        <result property="companyId" column="company_id"/>
+        <result property="companyTagName" column="hashtag_name"/>
+    </resultMap>
+
+
+<!--    CompanyNews-->
+    <resultMap id="CompanyNewsDto" type="CompanyNews">
+        <result property="companyNewsId" column="company_news_id"/>
+        <result property="companyId" column="company_id"/>
+        <result property="newsLink" column="news_link"/>
+    </resultMap>
+
+
+
+    <!--id를 가지는 회사가 존재하는지 여부-->
+    <select id="checkCompanyId" parameterType="Long" resultType="Integer">
+        select if( exists( select * from company where company_id = #{companyId}), 1, 0)
+    </select>
+
+    <!--    회사 생성-->
+    <insert id="registerCompany" parameterType="Company" useGeneratedKeys="true" keyProperty="companyId">
+        insert into company (image_url, name, description) values (#{imageUrl}, #{name}, #{description})
+    </insert>
+
+    <!--모든 회사 조회-->
+    <select id="getCompanyList" resultMap="CompanyDto">
+        select * from company
+    </select>
+
+    <!--회사 id로 조회-->
+    <select id="getCompanyById" parameterType="Long" resultMap="CompanyDto">
+        select * from company where company_id = #{companyId}
+    </select>
+
+
+<!--    Image 관련    -->
+    <select id="getCompanyImageListByCompanyId" parameterType="Long" resultMap="CompanyImageDto">
+        select * from company_image where company_id = #{companyId}
+    </select>
+
+    <select id="getImageById" parameterType="Long" resultMap="ImageDto">
+        select * from image where image_id = #{imageId}
+    </select>
+
+    <select id="checkImageId" parameterType="Long" resultType="Integer">
+        select if( exists( select * from image where image_id = #{imageId}), 1, 0)
+    </select>
+
+
+<!--    CompanyTag관련-->
+    <select id="getCompanyTagListByCompanyId" parameterType="Long" resultMap="CompanyTagDto">
+        select * from company_tag where company_id = #{companyId}
+    </select>
+
+
+<!--    CompanyNews관련-->
+    <select id="getCompanyNewsListByCompanyId" parameterType="Long" resultMap="CompanyNewsDto">
+        select * from company_news where company_id = #{companyId}
+    </select>
+</mapper>
