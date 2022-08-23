@@ -33,6 +33,13 @@
         <result property="companyTagName" column="hashtag_name"/>
     </resultMap>
 
+    <resultMap id="CompanyTag" type="com.mockrc8.app.domain.company.vo.CompanyTag">
+        <result property="companyTagId" column="hashtag_id"/>
+        <result property="companyId" column="company_id"/>
+        <result property="companyTagName" column="hashtag_name"/>
+        <result property="created_at" column="created_at"/>
+        <result property="updated_at" column="updated_at"/>
+    </resultMap>
 
 <!--    CompanyNews-->
     <resultMap id="CompanyNewsDto" type="CompanyNews">
@@ -41,7 +48,17 @@
         <result property="newsLink" column="news_link"/>
     </resultMap>
 
-
+    <resultMap id="Employment" type="com.mockrc8.app.domain.employment.vo.Employment">
+        <result property="employment_id" column="employment_id"/>
+        <result property="company_id" column="company_id"/>
+        <result property="title" column="title"/>
+        <result property="context" column="context"/>
+        <result property="deadline" column="deadline"/>
+        <result property="country" column="country"/>
+        <result property="location" column="location"/>
+        <result property="referral_compensation" column="referral_compensation"/>
+        <result property="user_compensation" column="user_compensation"/>
+    </resultMap>
 
     <!--id를 가지는 회사가 존재하는지 여부-->
     <select id="checkCompanyId" parameterType="Long" resultType="Integer">
@@ -88,4 +105,23 @@
     <select id="getCompanyNewsListByCompanyId" parameterType="Long" resultMap="CompanyNewsDto">
         select * from company_news where company_id = #{companyId}
     </select>
+
+
+    <select id="getCompanyJoinedTable" resultMap="companyJoinedtableMapping" parameterType="Long" >
+        select *
+        from company
+                 inner join employment e on company.company_id = e.company_id
+                 inner join company_tag ct on company.company_id = ct.company_id
+        where e.company_id = ${companyId};
+    </select>
+
+    <resultMap id="companyJoinedtableMapping" type="CompanyInfo">
+        <result property="company_id" column="company_id"/>
+        <result property="image_url" column="image_url"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <collection property="companyTagList" javaType="java.util.List" ofType="CompanyTag" resultMap="CompanyTag"></collection>
+        <collection property="employmentList" javaType="java.util.List" ofType="Employment" resultMap="Employment"></collection>
+    </resultMap>
+
 </mapper>

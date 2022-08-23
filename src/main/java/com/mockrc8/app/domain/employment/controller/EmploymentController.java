@@ -1,12 +1,12 @@
 package com.mockrc8.app.domain.employment.controller;
 
 import com.mockrc8.app.domain.company.service.CompanyService;
-import com.mockrc8.app.domain.company.dto.Company;
-import com.mockrc8.app.domain.company.dto.CompanyTag;
+import com.mockrc8.app.domain.company.vo.Company;
 import com.mockrc8.app.domain.company.dto.Image;
+import com.mockrc8.app.domain.company.vo.CompanyTag;
 import com.mockrc8.app.domain.employment.service.EmploymentService;
-import com.mockrc8.app.domain.employment.dto.Employment;
 import com.mockrc8.app.domain.employment.dto.TechSkill;
+import com.mockrc8.app.domain.employment.vo.Employment;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,7 +40,7 @@ public class EmploymentController {
     @GetMapping("/{employmentId}")
     public ResponseEntity<Map<String, Object>> getEmploymentById(@PathVariable Long employmentId){
         Employment employment = employmentService.getEmploymentById(employmentId);
-        Long companyId = employment.getCompanyId();
+        Long companyId = employment.getCompany_id();
 
         // employment
         Map<String, Object> result = new HashMap<>();
@@ -58,7 +58,7 @@ public class EmploymentController {
 
 
         // company_tag
-        List<CompanyTag> companyTagList = companyService.getCompanyTagListByCompanyId(employment.getCompanyId());
+        List<CompanyTag> companyTagList = companyService.getCompanyTagListByCompanyId(employment.getCompany_id());
         result.put("companyTag", companyTagList);
 
         // 현재 조회중인 채용 공고를 등록한 회사의 태그 리스트를 가지고,
@@ -73,7 +73,7 @@ public class EmploymentController {
         while(it.hasNext()){
             CompanyTag companyTag = it.next();
             count = maxCount - count;
-            employmentList.addAll(employmentService.getEmploymentListByCompanyTagName(companyTag.getCompanyTagName(), employmentId, maxCount));
+            employmentList.addAll(employmentService.getEmploymentListByCompanyTagName(companyTag.getHashtag_name(), employmentId, maxCount));
 
             if(employmentList.size() == maxCount){
                 break;

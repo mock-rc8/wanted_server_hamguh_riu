@@ -2,8 +2,13 @@ package com.mockrc8.app.domain.company.service;
 
 import com.mockrc8.app.domain.company.mapper.CompanyMapper;
 import com.mockrc8.app.domain.company.dto.*;
+import com.mockrc8.app.domain.company.vo.Company;
+import com.mockrc8.app.domain.company.vo.CompanyInfo;
+import com.mockrc8.app.domain.company.vo.CompanyTag;
 import com.mockrc8.app.global.error.exception.company.CompanyNotExistException;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -37,7 +42,7 @@ public class CompanyService {
 
         companyMapper.registerCompany(company);
 
-        Long companyId = company.getCompanyId();
+        Long companyId = company.getCompany_id();
         if(companyMapper.checkCompanyId(companyId) == 0){
             throw new CompanyNotExistException(COMPANY_NOT_EXIST);
         }
@@ -86,5 +91,11 @@ public class CompanyService {
      */
     public List<CompanyNews> getCompanyNewsListByCompanyId(Long companyId){
         return companyMapper.getCompanyNewsListByCompanyId(companyId);
+    }
+
+
+    public ResponseEntity<CompanyInfo> getCompanyJoinedTableInfo() {
+        final CompanyInfo companyJoinedTable = companyMapper.getCompanyJoinedTable(1L);
+        return new ResponseEntity<>(companyJoinedTable, HttpStatus.OK);
     }
 }
