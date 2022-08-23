@@ -8,6 +8,9 @@ import com.mockrc8.app.global.error.exception.User.EmailDuplicationException;
 import com.mockrc8.app.global.error.exception.User.PasswordNotMatchException;
 import com.mockrc8.app.global.error.exception.User.PhoneNumberDuplicationException;
 import com.mockrc8.app.global.error.exception.User.UserNotFoundException;
+import com.mockrc8.app.global.oAuth.dto.AccessToken;
+import com.mockrc8.app.global.oAuth.dto.ProfileDto;
+import com.mockrc8.app.global.oAuth.service.ProviderService;
 import com.mockrc8.app.global.util.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,13 +26,14 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final ProviderService providerService;
 
     @Transactional
     public ResponseEntity<UserRegisterResponseDto> registerUser(UserRegisterRequestDto userRegisterRequestDto) {
         if (userMapper.checkEmail((userRegisterRequestDto.getUserEmail())) == 1) {
             throw new EmailDuplicationException(ErrorCode.EMAIL_DUPLICATION);
         }
-        if(userRegisterRequestDto.getUserPassword() != userRegisterRequestDto.getUserPasswordConfirm()){
+        if(!userRegisterRequestDto.getUserPassword().equals(userRegisterRequestDto.getUserPasswordConfirm())){
             throw new PasswordNotMatchException(ErrorCode.PASSWORD_NOT_MATCH);
         }
         if(userMapper.checkPhoneNumber(userRegisterRequestDto.getUserPhoneNumber()) == 1){
@@ -83,5 +87,26 @@ public class UserService {
                 jwtService.createJwt(user.getEmail()),
                 refreshToken);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    public ResponseEntity<Object> loginByThirdParty(String code, String provider) {
+        AccessToken accessToken = providerService.getAccessToken(code, provider);
+        ProfileDto profile = providerService.getProfile(accessToken.getAccess_token(), provider);
+        String refreshToken = jwtService.createRefreshToken();
+        String sessionAccessToken = jwtService.createJwt(profile.getEmail());
+        if (userMapper.checkEmail(profile.getEmail()) == 1){
+            User user = userMapper.findUserByEmail(profile.getEmail());
+            userMapper.updateRefreshToken(user.getUser_id(),refreshToken);
+            UserLoginResponseDto response = new UserLoginResponseDto(user.getUser_id(), user.getEmail(), sessionAccessToken, refreshToken);
+            return new ResponseEntity<>(response,HttpStatus.OK);
+        }else{
+            final EmailValidationResponseDto dto = EmailValidationResponseDto.builder()
+                    .isSuccess(true)
+                    .code("해당 써드파티와 연결된 회원이 없습니다. 회원가입 페이지로 리다이렉트 해주세요")
+                    .redirectPage("/sign-up")
+                    .email(profile.getEmail())
+                    .build();
+            return new ResponseEntity<>(dto,HttpStatus.OK);
+        }
     }
 }

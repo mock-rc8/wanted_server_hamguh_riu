@@ -24,14 +24,14 @@ public class UserController {
         return userService.validateEmail(email);
     }
 
-    /**
-     * 이메일 로그인 API
-     * [POST] /login
-     * @return ResponseEntity<UserLoginResponseDto>
-     */
     @PostMapping("/login")
     public ResponseEntity<UserLoginResponseDto> login(@RequestBody UserLoginRequestDto userLoginRequestDto){
         return userService.loginUser(userLoginRequestDto);
+    }
+
+    @GetMapping("/login/{provider}")
+    public ResponseEntity<Object> loginByThirdParty(@RequestParam String code, @PathVariable String provider){
+        return userService.loginByThirdParty(code,provider);
     }
 
 }
