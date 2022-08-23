@@ -2,8 +2,11 @@ package com.mockrc8.app.domain.company.service;
 
 import com.mockrc8.app.domain.company.mapper.CompanyMapper;
 import com.mockrc8.app.domain.company.dto.*;
+import com.mockrc8.app.domain.company.vo.CompanyDetailVo;
 import com.mockrc8.app.global.error.exception.company.CompanyNotExistException;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,6 +21,11 @@ public class CompanyService {
 
     private CompanyMapper companyMapper;
 
+
+    public ResponseEntity<CompanyDetailVo> getCompanyJoinedTableInfo() {
+        final CompanyDetailVo companyJoinedTable = companyMapper.getCompanyJoinedTable(1L);
+        return new ResponseEntity<>(companyJoinedTable, HttpStatus.OK);
+    }
     public List<Company> getCompanyList(){
         List<Company> companyList = companyMapper.getCompanyList();
         return companyList;
