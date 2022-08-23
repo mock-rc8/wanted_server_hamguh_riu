@@ -1,5 +1,6 @@
 package com.mockrc8.app.global.util;
 
+import com.mockrc8.app.global.oAuth.service.UserDetailsServiceImpl;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +16,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtService {
 
-//    private final UserDetailsServiceImpl userDeatilsServiceImpl;
+    private final UserDetailsServiceImpl userDeatilsServiceImpl;
 
     private long tokenValidTime = 1000L * 60 * 30; // 30분
     private long refreshTokenValidTime = 1000L * 60 * 60 * 24 * 7;
@@ -63,9 +64,9 @@ public class JwtService {
         }
     }
 
-    // LOGIC FOR SPRING SECURITY
-    //    public Authentication getAuthentication(String token) {
-    //        UserDetails userDetails = userDeatilsServiceImpl.loadUserByUsername(getMemberEmail(token));
-    //        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-    //    }
+    public Authentication getAuthentication(String token) {
+        UserDetails userDetails = userDeatilsServiceImpl.loadUserByUsername(getMemberEmail(token));
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
+
 }

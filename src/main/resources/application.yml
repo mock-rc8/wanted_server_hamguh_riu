@@ -30,11 +30,13 @@ spring:
       client:
         registration:
           kakao:
-            client-id: 40497aa481ce3faa7ef3251506a95bf5
-            redirect-uri: http://localhost:9000/oauth/kakao # http://localhost:8080/login/oauth2/code/kakao
+            client-id: e913a5ec326dd4fce079b58b11d899ba
+#            TODO
+#            추후에 prod yaml 파일 생성해 localhost 를 도메인으로 바꿔줄것
+            redirect-uri: http://localhost:9000/login/kakao
             client-authentication-method: POST
             authorization-grant-type: authorization_code
-            scope: profile_nickname, profile_image, account_email
+            scope: profile_nickname, account_email
             client-name: Kakao
         provider:
           kakao:

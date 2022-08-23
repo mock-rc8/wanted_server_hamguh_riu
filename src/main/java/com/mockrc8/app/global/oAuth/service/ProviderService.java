@@ -6,6 +6,7 @@ import com.mockrc8.app.global.oAuth.dto.KakaoProfileDto;
 import com.mockrc8.app.global.oAuth.dto.ProfileDto;
 import com.mockrc8.app.global.util.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,11 @@ public class ProviderService {
     private final RestTemplate restTemplate;
     private final JwtService jwtService;
 
+    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
+    private String clientId;
+    @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
+    private String redirectUri;
+
     @Transactional
     public AccessToken getAccessToken(String code, String provider) {
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -33,8 +39,8 @@ public class ProviderService {
     private MultiValueMap<String,String> generateParam(String code){
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type","authorization_code");
-        params.add("client_id", "40497aa481ce3faa7ef3251506a95bf5");
-        params.add("redirect_uri","http://localhost:9000/oauth/kakao");
+        params.add("client_id", clientId);
+        params.add("redirect_uri",redirectUri);
         params.add("code",code);
         return params;
     }
