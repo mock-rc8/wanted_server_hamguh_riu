@@ -1,4 +1,4 @@
-package com.mockrc8.app.domain.company.model;
+package com.mockrc8.app.domain.company.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;

@@ -1,11 +1,12 @@
-package com.mockrc8.app.domain.employment;
+package com.mockrc8.app.domain.employment.controller;
 
-import com.mockrc8.app.domain.company.CompanyService;
-import com.mockrc8.app.domain.company.model.Company;
-import com.mockrc8.app.domain.company.model.CompanyTag;
-import com.mockrc8.app.domain.company.model.Image;
-import com.mockrc8.app.domain.employment.model.Employment;
-import com.mockrc8.app.domain.employment.model.TechSkill;
+import com.mockrc8.app.domain.company.service.CompanyService;
+import com.mockrc8.app.domain.company.dto.Company;
+import com.mockrc8.app.domain.company.dto.CompanyTag;
+import com.mockrc8.app.domain.company.dto.Image;
+import com.mockrc8.app.domain.employment.service.EmploymentService;
+import com.mockrc8.app.domain.employment.dto.Employment;
+import com.mockrc8.app.domain.employment.dto.TechSkill;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +33,10 @@ public class EmploymentController {
     }
 
 
+    /*
+    채용 ID로 특정 채용 조회 API
+     */
+
     @GetMapping("/{employmentId}")
     public ResponseEntity<Map<String, Object>> getEmploymentById(@PathVariable Long employmentId){
         Employment employment = employmentService.getEmploymentById(employmentId);
@@ -48,7 +53,7 @@ public class EmploymentController {
 
 
         // employment_image
-        List<Image> imageList = employmentService.getCompanyImageListByCompanyId(employmentId);
+        List<Image> imageList = employmentService.getEmploymentImageListByCompanyId(employmentId);
         result.put("image", imageList);
 
 
@@ -56,11 +61,15 @@ public class EmploymentController {
         List<CompanyTag> companyTagList = companyService.getCompanyTagListByCompanyId(employment.getCompanyId());
         result.put("companyTag", companyTagList);
 
+        // 현재 조회중인 채용 공고를 등록한 회사의 태그 리스트를 가지고,
+        // 반복자를 통해 해당 태그를 가지는 채용 공고들을 최대 16개까지 조회해야 한다.
+        // 현재 조회중인 채용 공고는 제외해야 한다.
         Iterator<CompanyTag> it = companyTagList.iterator();
 
         List<Employment> employmentList = new ArrayList<>();
         Integer maxCount = 16;
         Integer count = 0;
+
         while(it.hasNext()){
             CompanyTag companyTag = it.next();
             count = maxCount - count;
@@ -76,9 +85,6 @@ public class EmploymentController {
         // employment_tech_skill
         List<TechSkill> employmentTechSkillList = employmentService.getEmploymentTechSkillListByEmploymentId(employmentId);
         result.put("techSkill", employmentTechSkillList);
-
-
-        // 관련 employment 목록
 
 
         return ResponseEntity.ok(result);
