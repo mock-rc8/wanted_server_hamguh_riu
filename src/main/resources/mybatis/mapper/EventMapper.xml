@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mockrc8.app.domain.event.mapper.EventMapper">
+
+    <select id="getEvents" parameterType="EventRequestDto" resultType="Event">
+        select event.event_id,
+               event.name,
+               event.is_free,
+               event.context,
+               event.capacity,
+               event.start_time,
+               event.end_time,
+               event.event_thumbnail_image_url
+        from event
+        <if test=' typeId neq null and typeId neq "" '>
+            inner join event_type_join e on event.event_id = e.event_id
+            inner join event_type et on e.event_type_id = et.event_type_id
+        </if>
+        <if test=' isFree neq null and isFree neq "" '>
+            where is_free = #{isFree};
+        </if>
+    </select>
+
+    <resultMap id="EventTagMapper" type="EventTag">
+        <result property="event_tag_id" column="event_tag_id"/>
+        <result property="name" column="name"/>
+
+        <collection property="eventList" javaType="java.util.List" ofType="Event">
+            <result property="event_id" column="event_id"/>
+            <result property="name" column="name"/>
+            <result property="is_free" column="is_free"/>
+            <result property="context" column="context"/>
+            <result property="capacity" column="capacity"/>
+            <result property="start_time" column="start_time"/>
+            <result property="end_time" column="end_time"/>
+            <result property="event_thumbnail_image_url" column="event_thumbnail_image_url"/>
+        </collection>
+    </resultMap>
+
+    <select id="getEventsByTagId" parameterType="EventRequestDto" resultMap="EventTagMapper">
+            select
+            t.event_tag_id,
+            t.name,
+            event.event_id,
+            event.name,
+            event.is_free,
+            event.context,
+            event.capacity,
+            event.start_time,
+            event.end_time,
+            event.event_thumbnail_image_url
+            from event
+            <if test=' typeId neq null and typeId neq "" '>
+                inner join event_type_join e on event.event_id = e.event_id
+                inner join event_type et on e.event_type_id = et.event_type_id
+            </if>
+            inner join event_tag_join etj on event.event_id = etj.event_id
+            inner join event_tag t on etj.event_tag_id = t.event_tag_id
+            where t.event_tag_id = #{tagId}
+            <if test=' isFree neq null and isFree neq "" '>
+                where is_free = #{isFree};
+            </if>
+
+    </select>
+
+</mapper>
