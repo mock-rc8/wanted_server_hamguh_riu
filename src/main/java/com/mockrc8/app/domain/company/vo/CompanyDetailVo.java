@@ -14,11 +14,10 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class CompanyDetailVo {
-//    private Long company_id;
-//    private String image_url;
-//    private String name;
-//    private String description;
-    private Company company;
+    private Long company_id;
+    private String image_url;
+    private String name;
+    private String description;
     private List<CompanyTag> companyTagList;
     private List<Employment> employmentList;
 }
