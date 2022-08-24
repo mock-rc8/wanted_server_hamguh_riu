@@ -2,6 +2,8 @@ package com.mockrc8.app.domain.company.mapper;
 
 import com.mockrc8.app.domain.company.dto.*;
 import com.mockrc8.app.domain.company.vo.CompanyDetailVo;
+import com.mockrc8.app.domain.company.vo.CompanyListSearchedByTagVo;
+import com.mockrc8.app.domain.company.vo.CompanyTagGroupedTopicVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -24,6 +26,11 @@ public interface CompanyMapper {
 
     //company_tag
     List<CompanyTag> getCompanyTagListByCompanyId(Long companyId);
+
+    // 8-24
+    List<CompanyTag> getCompanyTagListByIdAndRandomList(Long hashtagId);
+    List<CompanyListSearchedByTagVo> getCompanyListByTagId(Long hashtagId);
+    List<CompanyTagGroupedTopicVo> getCompanyTagGroupedByTopic();
 
     //company_news
     List<CompanyNews> getCompanyNewsListByCompanyId(Long companyId);

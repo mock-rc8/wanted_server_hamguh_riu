@@ -24,7 +24,7 @@ public interface EmploymentMapper {
     List<EmploymentImage> getEmploymentImageListByCompanyId(Long employmentId);
 
     //employment_tech_skill
-    Integer checkEmploymentTechSkillByEmploymentId(Long employmentId);
+//    Integer checkEmploymentTechSkillByEmploymentId(Long employmentId);
     List<EmploymentTechSkill> getEmploymentTechSkillListByEmploymentId(Long employmentId);
 
     //tech_skill

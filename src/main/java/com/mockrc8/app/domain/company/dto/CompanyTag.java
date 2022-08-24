@@ -15,8 +15,14 @@ public class CompanyTag {
     private Long companyId;
     private String companyTagName;
 
-    public CompanyTag(Long companyId, String companyTagName){
-        this.companyId = companyId;
+//    public CompanyTag(Long companyId, String companyTagName){
+//        this.companyId = companyId;
+//        this.companyTagName = companyTagName;
+//    }
+
+
+    public CompanyTag(Long companyTagId, String companyTagName){
+        this.companyTagId = companyTagId;
         this.companyTagName = companyTagName;
     }
 }

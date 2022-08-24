@@ -78,9 +78,9 @@
 
 
 <!--    employment_tech_skill -->
-    <select id="checkEmploymentTechSkillByEmploymentId" parameterType="Long" resultType="Integer">
-        select if( exists( select * from employment_tech_skill where employment_id = #{employmentId}), 1, 0)
-    </select>
+<!--    <select id="checkEmploymentTechSkillByEmploymentId" parameterType="Long" resultType="Integer">-->
+<!--        select if( exists( select * from employment_tech_skill where employment_id = #{employmentId}), 1, 0)-->
+<!--    </select>-->
 
 
     <select id="getEmploymentTechSkillListByEmploymentId" parameterType="Long" resultMap="EmploymentTechSkillDto">
