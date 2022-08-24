@@ -2,8 +2,13 @@ package com.mockrc8.app.domain.company.service;
 
 import com.mockrc8.app.domain.company.mapper.CompanyMapper;
 import com.mockrc8.app.domain.company.dto.*;
+import com.mockrc8.app.domain.company.vo.CompanyDetailVo;
+import com.mockrc8.app.domain.company.vo.CompanyListSearchedByTagVo;
+import com.mockrc8.app.domain.company.vo.CompanyTagGroupedTopicVo;
 import com.mockrc8.app.global.error.exception.company.CompanyNotExistException;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,6 +22,27 @@ import static com.mockrc8.app.global.error.ErrorCode.*;
 public class CompanyService {
 
     private CompanyMapper companyMapper;
+
+
+    // 나중에 교체
+    public ResponseEntity<CompanyDetailVo> getCompanyJoinedTableInfo() {
+        final CompanyDetailVo companyJoinedTable = companyMapper.getCompanyJoinedTable(1L);
+        return new ResponseEntity<>(companyJoinedTable, HttpStatus.OK);
+    }
+
+
+    // 8-24 조회하는 태그 + 랜덤한 태그 4 목록 조회
+    public List<CompanyTag> getCompanyTagListByIdAndRandomList(Long hashtagId){
+        return companyMapper.getCompanyTagListByIdAndRandomList(hashtagId);
+    }
+
+    public List<CompanyListSearchedByTagVo> getCompanyListByTagId(Long hashtagId){
+        return companyMapper.getCompanyListByTagId(hashtagId);
+    }
+
+    public List<CompanyTagGroupedTopicVo> getCompanyTagGroupedByTopic(){
+        return companyMapper.getCompanyTagGroupedByTopic();
+    }
 
     public List<Company> getCompanyList(){
         List<Company> companyList = companyMapper.getCompanyList();

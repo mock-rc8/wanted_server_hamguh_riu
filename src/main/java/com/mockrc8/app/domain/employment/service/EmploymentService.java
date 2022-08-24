@@ -107,9 +107,9 @@ public class EmploymentService {
 
     public List<TechSkill> getEmploymentTechSkillListByEmploymentId(Long employmentId){
 
-        if(employmentMapper.checkEmploymentTechSkillByEmploymentId(employmentId) == 0){
-            throw new EmploymentTechSkillNotExistException(EMPLOYMENT_TECH_SKILL_NOT_EXIST);
-        }
+//        if(employmentMapper.checkEmploymentTechSkillByEmploymentId(employmentId) == 0){
+//            throw new EmploymentTechSkillNotExistException(EMPLOYMENT_TECH_SKILL_NOT_EXIST);
+//        }
         List<EmploymentTechSkill> employmentTechSkillList = employmentMapper.getEmploymentTechSkillListByEmploymentId(employmentId);
 
         Iterator<EmploymentTechSkill> it = employmentTechSkillList.iterator();

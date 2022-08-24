@@ -6,6 +6,9 @@ import com.mockrc8.app.domain.company.dto.Company;
 import com.mockrc8.app.domain.company.dto.CompanyNews;
 import com.mockrc8.app.domain.company.dto.CompanyTag;
 import com.mockrc8.app.domain.company.dto.Image;
+import com.mockrc8.app.domain.company.vo.CompanyDetailVo;
+import com.mockrc8.app.domain.company.vo.CompanyListSearchedByTagVo;
+import com.mockrc8.app.domain.company.vo.CompanyTagGroupedTopicVo;
 import com.mockrc8.app.domain.employment.service.EmploymentService;
 import com.mockrc8.app.domain.employment.dto.Employment;
 import lombok.AllArgsConstructor;
@@ -25,11 +28,49 @@ public class CompanyController {
     private EmploymentService employmentService;
 
 
+
+
+    @GetMapping("/allInfo")
+    public ResponseEntity<CompanyDetailVo> getCompanyJoinedTableInfo(){
+        return companyService.getCompanyJoinedTableInfo();
+    }
     @GetMapping()
     public ResponseEntity<List<Company>> getCompanyList(){
         List<Company> companyList = companyService.getCompanyList();
 
         return ResponseEntity.ok(companyList);
+    }
+
+    /*
+    회사 태그로 회사 목록 조회 API
+     */
+    @GetMapping("/tag/{hashtag_id}")
+    public ResponseEntity<Map<String, Object>> getCompanyTagListByIdAndRandomList(@PathVariable Long hashtag_id){
+        Map<String, Object> result = new HashMap<>();
+        List<CompanyTag> companyTagList = companyService.getCompanyTagListByIdAndRandomList(hashtag_id);
+        result.put("searchedTagList", companyTagList);
+
+        List<CompanyListSearchedByTagVo> companyList = companyService.getCompanyListByTagId(hashtag_id);
+        result.put("companyList", companyList);
+
+        List<CompanyTagGroupedTopicVo> companyTagListGroupedTopic = companyService.getCompanyTagGroupedByTopic();
+        result.put("companyTagListGroupedTopic", companyTagListGroupedTopic);
+
+        return ResponseEntity.ok(result);
+
+    }
+
+//    @GetMapping("/tag/{hashtag_id}")
+//    public ResponseEntity<List<CompanyTag>> getCompanyTagListByIdAndRandomList(@PathVariable Long hashtag_id){
+//        List<CompanyTag> companyTagList = companyService.getCompanyTagListByIdAndRandomList(hashtag_id);
+//        return ResponseEntity.ok(companyTagList);
+//    }
+
+    @GetMapping("tag_search/{")
+    public ResponseEntity<List<CompanyListSearchedByTagVo>> getCompanyListByTagId(){
+        List<CompanyListSearchedByTagVo> companyList = companyService.getCompanyListByTagId(5L);
+        return ResponseEntity.ok(companyList);
+
     }
 
 
