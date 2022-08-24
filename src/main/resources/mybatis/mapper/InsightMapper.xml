@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mockrc8.app.domain.insight.mapper.InsightMapper">
+
+    <select id="getInsights" resultType="Insight">
+        select * from insight
+    </select>
+
+    <resultMap id="insightTagMapper" type="InsightTag">
+        <result property="tag_id" column="tag_id"/>
+        <result property="name" column="name"/>
+
+        <collection property="insights" javaType="java.util.List" ofType="Insight">
+            <result property="insight_id" column="insight_id"/>
+            <result property="insight_url" column="insight_url"/>
+        </collection>
+
+    </resultMap>
+
+    <select id="getInsightsByTagId" parameterType="Integer" resultMap="insightTagMapper">
+        select it.tag_id, name, i.insight_id, insight_url
+        from insight_tag_join
+                 inner join insight i on insight_tag_join.insight_id = i.insight_id
+                 inner join insight_tag it on insight_tag_join.tag_id = it.tag_id
+        where it.tag_id = #{tagId};
+
+    </select>
+
+</mapper>
