@@ -169,4 +169,5 @@ where e.company_id = ${companyId};
             <result property="companyTagName" column="hashtag_name"/>
         </collection>
     </resultMap>
+
 </mapper>

@@ -25,11 +25,11 @@ public class CompanyService {
 
 
     // 나중에 교체
+
     public ResponseEntity<CompanyDetailVo> getCompanyJoinedTableInfo() {
         final CompanyDetailVo companyJoinedTable = companyMapper.getCompanyJoinedTable(1L);
         return new ResponseEntity<>(companyJoinedTable, HttpStatus.OK);
     }
-
 
     // 8-24 조회하는 태그 + 랜덤한 태그 4 목록 조회
     public List<CompanyTag> getCompanyTagListByIdAndRandomList(Long hashtagId){
@@ -43,6 +43,7 @@ public class CompanyService {
     public List<CompanyTagGroupedTopicVo> getCompanyTagGroupedByTopic(){
         return companyMapper.getCompanyTagGroupedByTopic();
     }
+
 
     public List<Company> getCompanyList(){
         List<Company> companyList = companyMapper.getCompanyList();
