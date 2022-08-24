@@ -8,10 +8,13 @@ import com.mockrc8.app.domain.employment.dto.Employment;
 import com.mockrc8.app.domain.employment.dto.EmploymentImage;
 import com.mockrc8.app.domain.employment.dto.EmploymentTechSkill;
 import com.mockrc8.app.domain.employment.dto.TechSkill;
+import com.mockrc8.app.domain.employment.vo.ReducedEmploymentVo;
+import com.mockrc8.app.global.config.BaseResponse;
 import com.mockrc8.app.global.error.exception.company.ImageNotExistException;
 import com.mockrc8.app.global.error.exception.employment.EmploymentNotExistException;
 import com.mockrc8.app.global.error.exception.employment.EmploymentTechSkillNotExistException;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -49,6 +52,13 @@ public class EmploymentService {
     }
 
 
+    // 성과급, 상여금, 인센티브 태그 조회
+    public ResponseEntity<Object> getEmploymentListByCompensation(){
+        List<ReducedEmploymentVo> reducedEmploymentVoList = employmentMapper.getEmploymentListByCompensation();
+
+        BaseResponse<List<ReducedEmploymentVo>> response = new BaseResponse<>(reducedEmploymentVoList);
+        return ResponseEntity.ok(response);
+    }
 
     /*
     특정 id로만 조회할 때, 존재하지 않는다면 exception
@@ -62,16 +72,6 @@ public class EmploymentService {
     }
 
 
-//    public Long registerEmployment(Employment employment){
-//        Long employmentId = employmentDao.registerEmployment(employment);
-//
-//        // dao에서 생성 후 받은 키값을 확인
-//        if(employmentDao.checkEmploymentId(employmentId) == 0){
-//            throw new EmploymentNotExistException(EMPLOYMENT_NOT_EXIST);
-//        }
-//
-//        return employmentId;
-//    }
 
 
 
