@@ -89,4 +89,10 @@ public class EmploymentController {
 
         return ResponseEntity.ok(result);
     }
+
+
+    @GetMapping("themes/incentive")
+    public ResponseEntity<Object> getEmploymentListByCompensation(){
+        return employmentService.getEmploymentListByCompensation();
+    }
 }

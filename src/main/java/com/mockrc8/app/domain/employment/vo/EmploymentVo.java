@@ -20,5 +20,4 @@ public class EmploymentVo {
     private String location;
     private int referral_compensation;
     private int user_compensation;
-
 }

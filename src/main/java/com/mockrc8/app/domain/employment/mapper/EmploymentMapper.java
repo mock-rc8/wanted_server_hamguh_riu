@@ -4,6 +4,7 @@ import com.mockrc8.app.domain.employment.dto.Employment;
 import com.mockrc8.app.domain.employment.dto.EmploymentImage;
 import com.mockrc8.app.domain.employment.dto.EmploymentTechSkill;
 import com.mockrc8.app.domain.employment.dto.TechSkill;
+import com.mockrc8.app.domain.employment.vo.ReducedEmploymentVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -29,4 +30,7 @@ public interface EmploymentMapper {
 
     //tech_skill
     TechSkill getTechSkillById(Long techSkillId);
+
+
+    List<ReducedEmploymentVo> getEmploymentListByCompensation();
 }

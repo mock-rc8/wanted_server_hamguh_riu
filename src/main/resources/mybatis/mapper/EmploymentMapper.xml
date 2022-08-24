@@ -93,4 +93,28 @@
         select * from tech_skill where tech_skill_id = #{techSkillId}
     </select>
 
+
+
+<!--    성과급, 상여금, 인센티브 -->
+    <select id="getEmploymentListByCompensation" resultMap="ReducedEmploymentVo">
+        select * from (select employment_id, title, location,
+            (select name from company where company_id = employment.company_id) as company_name,
+            (referral_compensation + employment.user_compensation) as compensation
+                from employment where company_id in (select company_id from company_tag where hashtag_name in ('성과급', '상여금', '인센티브'))) as employment_info
+                    left outer join
+                    (select employment_id, image_url from (select * from employment_image group by employment_id) as employment_image
+                        left outer join
+                        (select * from image) as image
+                        using(image_id)) as image
+                    using(employment_id);
+    </select>
+
+    <resultMap id="ReducedEmploymentVo" type="ReducedEmploymentVo">
+        <result property="employment_id" column="employment_id"/>
+        <result property="title" column="title"/>
+        <result property="location" column="location"/>
+        <result property="company_name" column="company_name"/>
+        <result property="compensation" column="compensation"/>
+        <result property="image_url" column="image_url"/>
+    </resultMap>
 </mapper>
