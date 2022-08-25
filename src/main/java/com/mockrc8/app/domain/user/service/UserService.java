@@ -109,4 +109,7 @@ public class UserService {
             return new ResponseEntity<>(dto,HttpStatus.OK);
         }
     }
+    public User findUserByEmail(String userEmail){
+        return userMapper.findUserByEmail(userEmail);
+    }
 }
