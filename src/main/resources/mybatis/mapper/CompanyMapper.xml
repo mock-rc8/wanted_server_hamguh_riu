@@ -4,7 +4,7 @@
 
     <resultMap id="CompanyDto" type="Company">
         <result property="companyId" column="company_id"/>
-        <result property="imageUrl" column="image_url"/>
+        <result property="imageUrl" column="logo_image_url"/>
         <result property="name" column="name"/>
         <result property="description" column="description"/>
     </resultMap>
@@ -21,15 +21,12 @@
 <!--    Image-->
     <resultMap id="ImageDto" type="Image">
         <result property="imageId" column="image_id"/>
-        <result property="createdAt" column="created_at"/>
-        <result property="updatedAt" column="updated_at"/>
         <result property="imageUrl" column="image_url"/>
     </resultMap>
 
 <!--    CompanyTag-->
     <resultMap id="CompanyTagDto" type="CompanyTag">
         <result property="companyTagId" column="hashtag_id"/>
-        <result property="companyId" column="company_id"/>
         <result property="companyTagName" column="hashtag_name"/>
     </resultMap>
 
@@ -37,7 +34,6 @@
 <!--    CompanyNews-->
     <resultMap id="CompanyNewsDto" type="CompanyNews">
         <result property="companyNewsId" column="company_news_id"/>
-        <result property="companyId" column="company_id"/>
         <result property="newsLink" column="news_link"/>
     </resultMap>
 
@@ -70,7 +66,7 @@
     </select>
 
     <select id="getImageById" parameterType="Long" resultMap="ImageDto">
-        select * from image where image_id = #{imageId}
+        select image_id, image_url from image where image_id = #{imageId}
     </select>
 
     <select id="checkImageId" parameterType="Long" resultType="Integer">
@@ -78,7 +74,18 @@
     </select>
 
 
+
+    <select id="getImageListByCompanyId" parameterType="Long" resultMap="ImageDto">
+        select image_id, image_url from image where image_id in (select company_image.image_id from company_image where company_id = #{companyId})
+    </select>
+
 <!--    CompanyTag관련-->
+
+    <select id="checkCompanyTagId" parameterType="Long" resultType="Integer">
+        select if( exists( select * from company_tag where hashtag_id = #{companyTagId}), 1, 0)
+    </select>
+
+
     <select id="getCompanyTagListByCompanyId" parameterType="Long" resultMap="CompanyTagDto">
         select * from company_tag where company_id = #{companyId}
     </select>
@@ -119,37 +126,48 @@
 
 
     <select id="getCompanyJoinedTable" resultMap="CompanyDetailVo" parameterType="Long" >
-select *
-from company
-         inner join employment e on company.company_id = e.company_id
-         inner join company_tag ct on company.company_id = ct.company_id
-where e.company_id = ${companyId};
+        select *, (referral_compensation + user_compensation) as compensation
+        from company
+                 inner join employment e using(company_id)
+                 inner join company_tag ct using(company_id)
+                 inner join (select company_id, image_id, image_url from (select * from image) as i right outer join (select * from company_image where company_id = #{companyId}) as ci using(image_id)) as image_result using(company_id)
+                 inner join company_news using(company_id);
     </select>
 
     <resultMap id="CompanyDetailVo" type="CompanyDetailVo">
         <result property="company_id" column="company_id"/>
-        <result property="image_url" column="image_url"/>
+        <result property="logo_image_url" column="logo_image_url"/>
         <result property="name" column="name"/>
         <result property="description" column="description"/>
 
         <collection property="companyTagList" javaType="java.util.ArrayList" ofType="CompanyTag">
             <result property="companyTagId" column="hashtag_id"/>
-            <result property="companyId" column="company_id"/>
             <result property="companyTagName" column="hashtag_name"/>
         </collection>
 
-        <collection property="employmentList" javaType="java.util.List" ofType="Employment">
+        <collection property="employmentList" javaType="java.util.ArrayList" ofType="Employment">
             <result property="employmentId" column="employment_id"/>
             <result property="title" column="title"/>
             <result property="deadline" column="deadline"/>
-            <result property="referralCompensation" column="referral_compensation"/>
-            <result property="userCompensation" column="user_compensation"/>
+            <result property="compensation" column="compensation"/>
         </collection>
+
+        <collection property="companyImageList" javaType="java.util.ArrayList" ofType="Image">
+            <result property="imageId" column="image_id"/>
+            <result property="imageUrl" column="image_url"/>
+        </collection>
+
+        <collection property="companyNewsList" javaType="java.util.ArrayList" ofType="CompanyNews">
+            <result property="companyNewsId" column="company_news_id"/>
+            <result property="newsLink" column="news_link"/>
+        </collection>
+
+
     </resultMap>
 
     <resultMap id="CompanyListSearchedByTagVo" type="CompanyListSearchedByTagVo">
         <result property="company_id" column="company_id"/>
-        <result property="image_url" column="image_url"/>
+        <result property="image_url" column="logo_image_url"/>
         <result property="name" column="name"/>
         <result property="description" column="description"/>
 

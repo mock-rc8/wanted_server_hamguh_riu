@@ -5,15 +5,15 @@ import com.mockrc8.app.domain.company.dto.*;
 import com.mockrc8.app.domain.company.vo.CompanyDetailVo;
 import com.mockrc8.app.domain.company.vo.CompanyListSearchedByTagVo;
 import com.mockrc8.app.domain.company.vo.CompanyTagGroupedTopicVo;
+import com.mockrc8.app.global.config.BaseResponse;
 import com.mockrc8.app.global.error.exception.company.CompanyNotExistException;
+import com.mockrc8.app.global.error.exception.company.CompanyTagNotExistException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import static com.mockrc8.app.global.error.ErrorCode.*;
 
@@ -26,9 +26,16 @@ public class CompanyService {
 
     // 나중에 교체
 
-    public ResponseEntity<CompanyDetailVo> getCompanyJoinedTableInfo() {
-        final CompanyDetailVo companyJoinedTable = companyMapper.getCompanyJoinedTable(1L);
-        return new ResponseEntity<>(companyJoinedTable, HttpStatus.OK);
+    public ResponseEntity<Object> getCompanyJoinedTableInfo(Long companyId) {
+        if(companyMapper.checkCompanyId(companyId) == 0){
+            throw new CompanyNotExistException(COMPANY_NOT_EXIST);
+        }
+        CompanyDetailVo companyJoinedTable = companyMapper.getCompanyJoinedTable(companyId);
+
+
+        BaseResponse<Object> response = new BaseResponse<>(companyJoinedTable);
+
+        return ResponseEntity.ok(response);
     }
 
     // 8-24 조회하는 태그 + 랜덤한 태그 4 목록 조회
@@ -44,6 +51,12 @@ public class CompanyService {
         return companyMapper.getCompanyTagGroupedByTopic();
     }
 
+    public void checkCompanyTagId(Long companyTagId){
+        Integer isExist = companyMapper.checkCompanyTagId(companyTagId);
+        if(isExist == 0){
+            throw new CompanyTagNotExistException(COMPANY_TAG_NOT_EXIST);
+        }
+    }
 
     public List<Company> getCompanyList(){
         List<Company> companyList = companyMapper.getCompanyList();
@@ -99,6 +112,11 @@ public class CompanyService {
         return imageList;
     }
 
+//
+//    public List<Image> getImageListByCompanyId(Long companyId){
+//        List<Image> imageList = companyMapper.getImageListByCompanyId(companyId);
+//
+//    }
 
     /*
     company_tag

@@ -1,8 +1,11 @@
 package com.mockrc8.app.domain.user.service;
 
+import com.mockrc8.app.domain.employment.mapper.EmploymentMapper;
+import com.mockrc8.app.domain.employment.vo.ReducedEmploymentVo;
 import com.mockrc8.app.domain.user.dto.*;
 import com.mockrc8.app.domain.user.mapper.UserMapper;
-import com.mockrc8.app.domain.user.vo.User;
+import com.mockrc8.app.domain.user.vo.*;
+import com.mockrc8.app.global.config.BaseResponse;
 import com.mockrc8.app.global.error.ErrorCode;
 import com.mockrc8.app.global.error.exception.User.EmailDuplicationException;
 import com.mockrc8.app.global.error.exception.User.PasswordNotMatchException;
@@ -15,15 +18,22 @@ import com.mockrc8.app.global.util.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserMapper userMapper;
+    private final EmploymentMapper employmentMapper;
+
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final ProviderService providerService;
@@ -109,7 +119,68 @@ public class UserService {
             return new ResponseEntity<>(dto,HttpStatus.OK);
         }
     }
+
     public User findUserByEmail(String userEmail){
         return userMapper.findUserByEmail(userEmail);
     }
+
+
+
+    public UserProfileVo getUserProfile(Long userId){
+        return userMapper.getUserProfile(userId);
+    }
+
+    // 유저가 북마크한 누른 채용 목록( 이미지 하나, 소개글은 제외하는 간략화한 채용 객체 목록)
+    public List<ReducedEmploymentVo> getUserEmploymentBookmarkVoList(Long userId, Integer maxCount){
+
+        List<UserEmploymentBookmarkVo> userEmploymentBookmarkList = userMapper.getUserEmploymentBookmarkVoList(userId, maxCount);
+        Iterator<UserEmploymentBookmarkVo> it = userEmploymentBookmarkList.iterator();
+
+        List<ReducedEmploymentVo> reducedEmploymentVoList = new ArrayList<>();
+
+        while(it.hasNext()){
+            UserEmploymentBookmarkVo userEmploymentBookmarkVo = it.next();
+            Long employmentId = userEmploymentBookmarkVo.getEmployment_id();
+            ReducedEmploymentVo reducedEmployment = employmentMapper.getReducedEmploymentByEmploymentId(employmentId);
+
+            reducedEmploymentVoList.add(reducedEmployment);
+        }
+
+        return reducedEmploymentVoList;
+    }
+
+
+    // 유저가 좋아요를 누른 채용 목록( 이미지 하나, 소개글은 제외하는 간략화한 채용 객체 목록)
+    public List<ReducedEmploymentVo> getUserEmploymentLikeVoList(Long userId, Integer maxCount){
+
+        List<UserEmploymentLikeVo> userEmploymentLikeVoList = userMapper.getUserEmploymentLikeVoList(userId, maxCount);
+        Iterator<UserEmploymentLikeVo> it = userEmploymentLikeVoList.iterator();
+
+        List<ReducedEmploymentVo> reducedEmploymentVoList = new ArrayList<>();
+
+        while(it.hasNext()){
+            UserEmploymentLikeVo userEmploymentBookmarkVo = it.next();
+            Long employmentId = userEmploymentBookmarkVo.getEmployment_id();
+            ReducedEmploymentVo reducedEmployment = employmentMapper.getReducedEmploymentByEmploymentId(employmentId);
+
+            reducedEmploymentVoList.add(reducedEmployment);
+        }
+
+        return reducedEmploymentVoList;
+    }
+
+    public List<UserInterestTagVo> getUserInterestTagVoByUserId(Long userId, Integer maxCount){
+        return userMapper.getUserInterestTagVoByUserId(userId, maxCount);
+    }
+
+
+
+//    public ResponseEntity<Object> getUserProfile(Long userId){
+//        UserProfileVo userProfileVo = userMapper.getUserProfile(userId);
+//
+//        BaseResponse<UserProfileVo> response = new BaseResponse<>(userProfileVo);
+//        return ResponseEntity.ok(response);
+//    }
+
+
 }

@@ -12,7 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class ReducedEmploymentVo {
-
     private Long employment_id;
     private String title;
     private String location;

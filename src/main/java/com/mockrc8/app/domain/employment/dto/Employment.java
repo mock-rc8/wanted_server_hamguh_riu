@@ -23,6 +23,7 @@ public class Employment {
     private String location;
     private Integer referralCompensation;
     private Integer userCompensation;
+    private Integer compensation;
 
     public Employment(Long companyId, String title, LocalDateTime deadline, Integer referralCompensation, Integer userCompensation){
         this.companyId = companyId;
@@ -30,6 +31,13 @@ public class Employment {
         this.deadline = deadline;
         this.referralCompensation = referralCompensation;
         this.userCompensation = userCompensation;
+    }
+
+    public Employment(Long employmentId, String title, LocalDateTime deadline, Integer compensation){
+        this.employmentId = employmentId;
+        this.title = title;
+        this.deadline = deadline;
+        this.compensation = compensation;
     }
 
 }
