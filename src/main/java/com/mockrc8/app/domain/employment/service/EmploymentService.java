@@ -60,6 +60,14 @@ public class EmploymentService {
         return ResponseEntity.ok(response);
     }
 
+    // 채용 마감 임박
+    public ResponseEntity<Object> getEmploymentListByCloseSoon(){
+        List<ReducedEmploymentVo> reducedEmploymentVoList = employmentMapper.getEmploymentListByCloseSoon();
+
+        BaseResponse<List<ReducedEmploymentVo>> response = new BaseResponse<>(reducedEmploymentVoList);
+        return ResponseEntity.ok(response);
+    }
+
     /*
     특정 id로만 조회할 때, 존재하지 않는다면 exception
      */
@@ -79,8 +87,20 @@ public class EmploymentService {
     company_image
      */
 
+
+//    public Image getEmploymentImageByEmploymentId(Long employmentId){
+//        EmploymentImage employmentImage = employmentMapper.getEmploymentImageByEmploymentId(employmentId);
+//
+//        Long imageId = employmentImage.getImageId();
+//        if(companyMapper.checkImageId(imageId) == 0){
+//            throw new ImageNotExistException(IMAGE_NOT_EXIST);
+//        }
+//
+//        return companyMapper.getImageById(imageId);
+//    }
+
     public List<Image> getEmploymentImageListByCompanyId(Long employmentId){
-        List<EmploymentImage> employmentImageList = employmentMapper.getEmploymentImageListByCompanyId(employmentId);
+        List<EmploymentImage> employmentImageList = employmentMapper.getEmploymentImageListByEmploymentId(employmentId);
 
 
         Iterator<EmploymentImage> it = employmentImageList.iterator();
@@ -124,5 +144,14 @@ public class EmploymentService {
         }
 
         return techSkillList;
+    }
+
+
+    // ReducedEmployment를 employmentId로 조회
+    ReducedEmploymentVo getReducedEmploymentByEmploymentId(Long employmentId){
+        if(employmentMapper.checkEmploymentId(employmentId) == 0){
+            throw new EmploymentNotExistException(EMPLOYMENT_NOT_EXIST);
+        }
+        return employmentMapper.getReducedEmploymentByEmploymentId(employmentId);
     }
 }

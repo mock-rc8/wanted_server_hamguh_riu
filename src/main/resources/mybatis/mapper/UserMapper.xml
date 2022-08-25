@@ -24,4 +24,68 @@
     </update>
 
 
+
+
+<!--    <select id="getUserProfile" resultMap="UserProfileVo">-->
+<!--        select * from (select * from user where user_id = #{userId}) as u inner join user_employment_bookmark using(user_id) inner join user_employment_like using(user_id)-->
+<!--    </select>-->
+
+    <resultMap id="UserProfileVo" type="UserProfileVo">
+        <result property="user_id" column="user_id"/>
+        <result property="name" column="name"/>
+        <result property="email" column="email"/>
+        <result property="phone_number" column="phone_number"/>
+        <result property="profile_image" column="profile_image"/>
+
+<!--
+이후 지원 현황, 관심 있음 등 구성요소를 추가할때 용이하도록,
+그리고 유저가 북마크한 채용 목록 조회 API, 유저가 좋아요한 채용 목록 조회 API 에서 재사용하기 위해
+mapper 인터페이스의 메서드가 단일 책임 원칙을 만족하도록 작성했습니다.
+-->
+
+<!--        <collection property="userEmploymentBookmarkVoList" javaType="java.util.ArrayList" ofType="UserEmploymentBookmarkVo"-->
+<!--                    select="com.mockrc8.app.domain.user.mapper.UserMapper.getUserEmploymentBookmarkVo"/>-->
+
+<!--        <collection property="userEmploymentBookmarkVoList" javaType="java.util.ArrayList" ofType="UserEmploymentBookmarkVo">-->
+<!--            <result property="user_employment_bookmark_id" column="user_employment_bookmark_id"/>-->
+<!--            <result property="user_id" column="user_id"/>-->
+<!--            <result property="employment_id" column="employment_id"/>-->
+<!--        </collection>-->
+
+<!--        <collection property="userEmploymentLikeVoList" javaType="java.util.ArrayList" ofType="UserEmploymentLikeVo">-->
+<!--            <result property="user_employment_like_id" column="user_employment_like_id"/>-->
+<!--            <result property="user_id" column="user_id"/>-->
+<!--            <result property="employment_id" column="employment_id"/>-->
+<!--        </collection>-->
+    </resultMap>
+
+
+    <select id="getUserProfile" resultMap="UserProfileVo">
+        select * from user where user_id = #{userId}
+    </select>
+
+
+    <select id="getUserEmploymentBookmarkVoList" resultType="UserEmploymentBookmarkVo">
+        select * from user_employment_bookmark where user_id = #{userId}
+        <if test="maxCount != null">
+            limit #{maxCount}
+        </if>
+    </select>
+
+
+    <select id="getUserEmploymentLikeVoList" resultType="UserEmploymentLikeVo">
+        select * from user_employment_like where user_id = #{userId}
+        <if test="maxCount != null">
+            limit #{maxCount}
+        </if>
+    </select>
+
+    <select id="getUserInterestTagVoByUserId" resultType="UserInterestTagVo">
+        select * from community_tag where community_tag_id in
+            (select tag_id from user_interest_tag where user_id = #{userId})
+        <if test="maxCount != null">
+            limit #{maxCount}
+        </if>
+    </select>
+
 </mapper>

@@ -11,6 +11,7 @@ import com.mockrc8.app.domain.company.vo.CompanyListSearchedByTagVo;
 import com.mockrc8.app.domain.company.vo.CompanyTagGroupedTopicVo;
 import com.mockrc8.app.domain.employment.service.EmploymentService;
 import com.mockrc8.app.domain.employment.dto.Employment;
+import com.mockrc8.app.global.config.BaseResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,10 +31,7 @@ public class CompanyController {
 
 
 
-    @GetMapping("/allInfo")
-    public ResponseEntity<CompanyDetailVo> getCompanyJoinedTableInfo(){
-        return companyService.getCompanyJoinedTableInfo();
-    }
+
     @GetMapping()
     public ResponseEntity<List<Company>> getCompanyList(){
         List<Company> companyList = companyService.getCompanyList();
@@ -45,7 +43,10 @@ public class CompanyController {
     회사 태그로 회사 목록 조회 API
      */
     @GetMapping("/tag/{hashtag_id}")
-    public ResponseEntity<Map<String, Object>> getCompanyTagListByIdAndRandomList(@PathVariable Long hashtag_id){
+    public ResponseEntity<Object> getCompanyTagListByIdAndRandomList(@PathVariable Long hashtag_id){
+
+        companyService.checkCompanyTagId(hashtag_id);
+
         Map<String, Object> result = new HashMap<>();
         List<CompanyTag> companyTagList = companyService.getCompanyTagListByIdAndRandomList(hashtag_id);
         result.put("searchedTagList", companyTagList);
@@ -56,7 +57,9 @@ public class CompanyController {
         List<CompanyTagGroupedTopicVo> companyTagListGroupedTopic = companyService.getCompanyTagGroupedByTopic();
         result.put("companyTagListGroupedTopic", companyTagListGroupedTopic);
 
-        return ResponseEntity.ok(result);
+
+        BaseResponse<Map<String, Object>> response = new BaseResponse<>(result);
+        return ResponseEntity.ok(response);
 
     }
 
@@ -66,12 +69,12 @@ public class CompanyController {
 //        return ResponseEntity.ok(companyTagList);
 //    }
 
-    @GetMapping("tag_search/{")
-    public ResponseEntity<List<CompanyListSearchedByTagVo>> getCompanyListByTagId(){
-        List<CompanyListSearchedByTagVo> companyList = companyService.getCompanyListByTagId(5L);
-        return ResponseEntity.ok(companyList);
-
-    }
+//    @GetMapping("tag_search/{")
+//    public ResponseEntity<List<CompanyListSearchedByTagVo>> getCompanyListByTagId(){
+//        List<CompanyListSearchedByTagVo> companyList = companyService.getCompanyListByTagId(5L);
+//        return ResponseEntity.ok(companyList);
+//
+//    }
 
 
     /*
@@ -79,32 +82,38 @@ public class CompanyController {
      */
 
     @GetMapping("/{companyId}")
-    public ResponseEntity<Map<String, Object>> getCompanyById(@PathVariable Long companyId){
-        Company company = companyService.getCompanyById(companyId);
-
-        Map<String, Object> result = new HashMap<>();
-
-        // 조회하는 회사 Id를 키값으로, 값은 company 객체
-        result.put(String.valueOf(company.getCompanyId()), company);
-
-        // 회사가 등록한 채용 공고 리스트를 값으로 함.
-        List<Employment> employmentList = employmentService.getReducedEmploymentListByCompanyId(companyId);
-        result.put("employment", employmentList);
-
-        // 회사 소개 이미지 리스트를 값으로 함.
-        List<Image> companyImageList = companyService.getCompanyImageListByCompanyId(companyId);
-        result.put("companyImage", companyImageList);
-
-        // 회사 태그 리스트를 값으로 함.
-        List<CompanyTag> companyTagList = companyService.getCompanyTagListByCompanyId(companyId);
-        result.put("companyTag", companyTagList);
-
-        // 회사 뉴스 리스트를 값으로 함.
-        List<CompanyNews> companyNewsList = companyService.getCompanyNewsListByCompanyId(companyId);
-        result.put("companyNews", companyNewsList);
-
-        return ResponseEntity.ok(result);
+    public ResponseEntity<Object> getCompanyJoinedTableInfo(@PathVariable Long companyId){
+        return companyService.getCompanyJoinedTableInfo(companyId);
     }
+
+//    @GetMapping("/{companyId}")
+//    public ResponseEntity<Object> getCompanyById(@PathVariable Long companyId){
+//        Company company = companyService.getCompanyById(companyId);
+//
+//        Map<String, Object> result = new HashMap<>();
+//
+//        // 조회하는 회사 Id를 키값으로, 값은 company 객체
+//        result.put("company", company);
+//
+//        // 회사가 등록한 채용 공고 리스트를 값으로 함.
+//        List<Employment> employmentList = employmentService.getReducedEmploymentListByCompanyId(companyId);
+//        result.put("employment", employmentList);
+//
+//        // 회사 소개 이미지 리스트를 값으로 함.
+//        List<Image> companyImageList = companyService.getCompanyImageListByCompanyId(companyId);
+//        result.put("companyImage", companyImageList);
+//
+//        // 회사 태그 리스트를 값으로 함.
+//        List<CompanyTag> companyTagList = companyService.getCompanyTagListByCompanyId(companyId);
+//        result.put("companyTag", companyTagList);
+//
+//        // 회사 뉴스 리스트를 값으로 함.
+//        List<CompanyNews> companyNewsList = companyService.getCompanyNewsListByCompanyId(companyId);
+//        result.put("companyNews", companyNewsList);
+//
+//        BaseResponse<Map<String, Object>> response = new BaseResponse<>(result);
+//        return ResponseEntity.ok(response);
+//    }
 
 
     @PostMapping()
