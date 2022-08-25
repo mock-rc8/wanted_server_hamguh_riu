@@ -13,7 +13,7 @@ public class UserRegisterRequestDto {
     @Email
     private String userEmail;
     private String userName;
-    private String userPhoneNumber;
+        private String userPhoneNumber;
     @NotNull
     private String userPassword;
     private String userPasswordConfirm;

@@ -120,6 +120,11 @@ public class UserService {
         }
     }
 
+    public User findUserByEmail(String userEmail){
+        return userMapper.findUserByEmail(userEmail);
+    }
+
+
 
     public UserProfileVo getUserProfile(Long userId){
         return userMapper.getUserProfile(userId);

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mockrc8.app.domain.resume.mapper.ResumeMapper">
+
+    <select id="getResumesByUserId" parameterType="Long" resultType="Resume">
+        select *
+        from resume
+        where 1 = 1
+          and user_id = #{userId}
+          and is_deleted = 0
+    </select>
+
+    <select id="getResumeById" resultType="Resume">
+        select *
+        from resume
+        where resume_id = #{resumeId}
+    </select>
+
+    <select id="getAward" resultType="Resume_award">
+        select resume_award_id, ra.resume_id, award_date, award_title, award_detail
+        from resume
+        inner join resume_award ra on resume.resume_id = ra.resume_id
+        where resume.resume_id = #{resumeId}
+    </select>
+
+    <select id="getCareer" resultMap="careerMapper">
+        select ra.career_id,
+               ra.resume_id,
+               ra.start_time,
+               ra.end_time, ra.company_name,
+               ra.department_name,
+               ra.is_in_service,
+               rca.career_accomplishment_id, rca.career_id, rca.title, rca.description, rca.start_time, rca.end_time
+        from resume
+                 inner join resume_career ra on resume.resume_id = ra.resume_id
+                 inner join resume_career_accomplishment rca on ra.career_id = rca.career_id
+        where resume.resume_id = #{resumeId}
+    </select>
+
+    <resultMap id="careerMapper" type="Resume_career">
+        <result property="career_id" column="career_id"/>
+        <result property="resume_id" column="resume_id"/>
+        <result property="start_time" column="start_time"/>
+        <result property="end_time" column="end_time"/>
+        <result property="company_name" column="company_name"/>
+        <result property="department_name" column="career_id"/>
+        <result property="is_in_service" column="is_in_service"/>
+
+        <collection property="accomplishmentList" javaType="java.util.List" ofType="Resume_career_accomplishment">
+            <result property="career_accomplishment_id" column="career_accomplishment_id"/>
+            <result property="title" column="title"/>
+            <result property="description" column="description"/>
+            <result property="start_time" column="start_time"/>
+            <result property="end_time" column="end_time"/>
+        </collection>
+    </resultMap>
+
+    <select id="getDegree" resultType="Resume_education_degree">
+        select resume_education_degree_id, resume.resume_id, start_time, end_time, is_in_service, degree_name, content
+        from resume
+                 inner join resume_education_degree ra on resume.resume_id = ra.resume_id
+        where resume.resume_id = #{resumeId}
+    </select>
+
+
+    <select id="getLanguage" resultMap="LanguageMapper">
+        select ra.resume_language_skill_id, ra.resume_id, language, level, resume_language_test_id, rlt.resume_language_skill_id, test_name, score, acquisition_date
+        from resume
+                 inner join resume_language_skill ra on resume.resume_id = ra.resume_id
+                 inner join resume_language_test rlt on ra.resume_language_skill_id = rlt.resume_language_skill_id
+        where resume.resume_id = #{resumeId}
+    </select>
+
+    <resultMap id="LanguageMapper" type="Resume_language_skill">
+        <result property="resume_language_skill_id" column="resume_language_skill_id"/>
+        <result property="resume_id" column="resume_id"/>
+        <result property="language" column="language"/>
+        <result property="level" column="level"/>
+
+        <collection property="tests" javaType="java.util.List" ofType="Resume_language_test">
+            <result property="resume_language_test_id" column="resume_language_test_id"/>
+            <result property="resume_language_skill_id" column="resume_language_skill_id"/>
+            <result property="test_name" column="test_name"/>
+            <result property="score" column="score"/>
+            <result property="acquisition_date" column="acquisition_date"/>
+        </collection>
+    </resultMap>
+
+
+</mapper>
