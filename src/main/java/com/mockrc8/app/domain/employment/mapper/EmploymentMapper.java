@@ -1,5 +1,6 @@
 package com.mockrc8.app.domain.employment.mapper;
 
+import com.mockrc8.app.domain.company.dto.Image;
 import com.mockrc8.app.domain.employment.dto.Employment;
 import com.mockrc8.app.domain.employment.dto.EmploymentImage;
 import com.mockrc8.app.domain.employment.dto.EmploymentTechSkill;
@@ -22,7 +23,8 @@ public interface EmploymentMapper {
 
 
     //employment_image
-    List<EmploymentImage> getEmploymentImageListByCompanyId(Long employmentId);
+    List<EmploymentImage> getEmploymentImageListByEmploymentId(Long employmentId);
+    EmploymentImage getEmploymentImageByEmploymentId(Long employmentId);
 
     //employment_tech_skill
 //    Integer checkEmploymentTechSkillByEmploymentId(Long employmentId);
@@ -31,6 +33,7 @@ public interface EmploymentMapper {
     //tech_skill
     TechSkill getTechSkillById(Long techSkillId);
 
-
+    ReducedEmploymentVo getReducedEmploymentByEmploymentId(Long employmentId);
     List<ReducedEmploymentVo> getEmploymentListByCompensation();
+    List<ReducedEmploymentVo> getEmploymentListByCloseSoon();
 }

@@ -31,6 +31,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/login/**").permitAll()
                 .antMatchers("/login/kakao").permitAll()
                 .antMatchers("/insights/**").permitAll()
+                .antMatchers("/user/**").permitAll() // 테스트하기위해 추가했습니다.
                 .antMatchers("/events/**").permitAll()
                 .anyRequest().authenticated()
                 .and()

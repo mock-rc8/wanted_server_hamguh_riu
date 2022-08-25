@@ -24,10 +24,13 @@ public interface CompanyMapper {
     Image getImageById(Long imageId);
     Integer checkImageId(Long imageId);
 
+    List<Image> getImageListByCompanyId(Long companyId);
+
     //company_tag
     List<CompanyTag> getCompanyTagListByCompanyId(Long companyId);
 
     // 8-24
+    Integer checkCompanyTagId(Long companyTagId);
     List<CompanyTag> getCompanyTagListByIdAndRandomList(Long hashtagId);
     List<CompanyListSearchedByTagVo> getCompanyListByTagId(Long hashtagId);
     List<CompanyTagGroupedTopicVo> getCompanyTagGroupedByTopic();
