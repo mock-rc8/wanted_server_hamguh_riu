@@ -53,16 +53,16 @@ public class EmploymentService {
 
 
     // 성과급, 상여금, 인센티브 태그 조회
-    public ResponseEntity<Object> getEmploymentListByCompensation(){
-        List<ReducedEmploymentVo> reducedEmploymentVoList = employmentMapper.getEmploymentListByCompensation();
+    public ResponseEntity<Object> getEmploymentListByCompensation(Integer lastSelectedEmploymentId){
+        List<ReducedEmploymentVo> reducedEmploymentVoList = employmentMapper.getEmploymentListByCompensation(lastSelectedEmploymentId);
 
         BaseResponse<List<ReducedEmploymentVo>> response = new BaseResponse<>(reducedEmploymentVoList);
         return ResponseEntity.ok(response);
     }
 
     // 채용 마감 임박
-    public ResponseEntity<Object> getEmploymentListByCloseSoon(){
-        List<ReducedEmploymentVo> reducedEmploymentVoList = employmentMapper.getEmploymentListByCloseSoon();
+    public ResponseEntity<Object> getEmploymentListByCloseSoon(Integer lastSelectedEmploymentId){
+        List<ReducedEmploymentVo> reducedEmploymentVoList = employmentMapper.getEmploymentListByCloseSoon(lastSelectedEmploymentId);
 
         BaseResponse<List<ReducedEmploymentVo>> response = new BaseResponse<>(reducedEmploymentVoList);
         return ResponseEntity.ok(response);
@@ -148,10 +148,10 @@ public class EmploymentService {
 
 
     // ReducedEmployment를 employmentId로 조회
-    ReducedEmploymentVo getReducedEmploymentByEmploymentId(Long employmentId){
-        if(employmentMapper.checkEmploymentId(employmentId) == 0){
-            throw new EmploymentNotExistException(EMPLOYMENT_NOT_EXIST);
-        }
-        return employmentMapper.getReducedEmploymentByEmploymentId(employmentId);
-    }
+//    ReducedEmploymentVo getReducedEmploymentByEmploymentId(Long employmentId){
+//        if(employmentMapper.checkEmploymentId(employmentId) == 0){
+//            throw new EmploymentNotExistException(EMPLOYMENT_NOT_EXIST);
+//        }
+//        return employmentMapper.getReducedEmploymentByEmploymentId(employmentId);
+//    }
 }

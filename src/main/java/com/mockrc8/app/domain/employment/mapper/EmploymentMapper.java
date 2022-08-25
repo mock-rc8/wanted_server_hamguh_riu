@@ -33,7 +33,7 @@ public interface EmploymentMapper {
     //tech_skill
     TechSkill getTechSkillById(Long techSkillId);
 
-    ReducedEmploymentVo getReducedEmploymentByEmploymentId(Long employmentId);
-    List<ReducedEmploymentVo> getEmploymentListByCompensation();
-    List<ReducedEmploymentVo> getEmploymentListByCloseSoon();
+    ReducedEmploymentVo getReducedEmploymentByEmploymentId(Long employmentId, Boolean needCompanyImage);
+    List<ReducedEmploymentVo> getEmploymentListByCompensation(Integer lastSelectedEmploymentId);
+    List<ReducedEmploymentVo> getEmploymentListByCloseSoon(Integer lastSelectedEmploymentId);
 }

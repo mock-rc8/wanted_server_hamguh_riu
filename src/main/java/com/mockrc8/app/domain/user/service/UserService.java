@@ -126,7 +126,7 @@ public class UserService {
     }
 
     // 유저가 북마크한 누른 채용 목록( 이미지 하나, 소개글은 제외하는 간략화한 채용 객체 목록)
-    public List<ReducedEmploymentVo> getUserEmploymentBookmarkVoList(Long userId, Integer maxCount){
+    public List<ReducedEmploymentVo> getUserEmploymentBookmarkVoList(Long userId, Integer maxCount, Boolean isCompanyImage){
 
         List<UserEmploymentBookmarkVo> userEmploymentBookmarkList = userMapper.getUserEmploymentBookmarkVoList(userId, maxCount);
         Iterator<UserEmploymentBookmarkVo> it = userEmploymentBookmarkList.iterator();
@@ -136,7 +136,7 @@ public class UserService {
         while(it.hasNext()){
             UserEmploymentBookmarkVo userEmploymentBookmarkVo = it.next();
             Long employmentId = userEmploymentBookmarkVo.getEmployment_id();
-            ReducedEmploymentVo reducedEmployment = employmentMapper.getReducedEmploymentByEmploymentId(employmentId);
+            ReducedEmploymentVo reducedEmployment = employmentMapper.getReducedEmploymentByEmploymentId(employmentId, isCompanyImage);
 
             reducedEmploymentVoList.add(reducedEmployment);
         }
@@ -146,7 +146,7 @@ public class UserService {
 
 
     // 유저가 좋아요를 누른 채용 목록( 이미지 하나, 소개글은 제외하는 간략화한 채용 객체 목록)
-    public List<ReducedEmploymentVo> getUserEmploymentLikeVoList(Long userId, Integer maxCount){
+    public List<ReducedEmploymentVo> getUserEmploymentLikeVoList(Long userId, Integer maxCount, Boolean isCompanyImage){
 
         List<UserEmploymentLikeVo> userEmploymentLikeVoList = userMapper.getUserEmploymentLikeVoList(userId, maxCount);
         Iterator<UserEmploymentLikeVo> it = userEmploymentLikeVoList.iterator();
@@ -156,7 +156,7 @@ public class UserService {
         while(it.hasNext()){
             UserEmploymentLikeVo userEmploymentBookmarkVo = it.next();
             Long employmentId = userEmploymentBookmarkVo.getEmployment_id();
-            ReducedEmploymentVo reducedEmployment = employmentMapper.getReducedEmploymentByEmploymentId(employmentId);
+            ReducedEmploymentVo reducedEmployment = employmentMapper.getReducedEmploymentByEmploymentId(employmentId, isCompanyImage);
 
             reducedEmploymentVoList.add(reducedEmployment);
         }

@@ -9,11 +9,13 @@ import com.mockrc8.app.domain.employment.dto.Employment;
 import com.mockrc8.app.domain.employment.dto.TechSkill;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @RestController
@@ -92,11 +94,24 @@ public class EmploymentController {
 
 
     @GetMapping("themes/incentive")
-    public ResponseEntity<Object> getEmploymentListByCompensation(){
-        return employmentService.getEmploymentListByCompensation();
+    public ResponseEntity<Object> getEmploymentListByCompensation(HttpServletRequest request){
+        String lastSelectedEmploymentString = request.getHeader("lastSelectedEmploymentId");
+        Integer lastSelectedEmploymentId = null;
+        if(lastSelectedEmploymentString != null){
+            lastSelectedEmploymentId = Integer.valueOf(lastSelectedEmploymentString);
+        }
+        return employmentService.getEmploymentListByCompensation(lastSelectedEmploymentId);
     }
 
 
-//    @GetMapping("themas/closesoon")
-//    public ResponseEntity<Object>
+    @GetMapping("themes/closesoon")
+    public ResponseEntity<Object> getEmploymentListByCloseSoon(HttpServletRequest request){
+
+        String lastSelectedEmploymentString = request.getHeader("lastSelectedEmploymentId");
+        Integer lastSelectedEmploymentId = null;
+        if(lastSelectedEmploymentString != null){
+            lastSelectedEmploymentId = Integer.valueOf(lastSelectedEmploymentString);
+        }
+        return employmentService.getEmploymentListByCloseSoon(lastSelectedEmploymentId);
+    }
 }

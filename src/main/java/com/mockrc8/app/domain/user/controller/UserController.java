@@ -54,15 +54,15 @@ public class UserController {
         result.put("userProfile", userProfileVo);
 
         //유저의 관심 태그 가져오기, 최대 2개까지만 보여준다.
-        List<UserInterestTagVo> userInterestTagVoList = userService.getUserInterestTagVoByUserId(userId, 2);
+        List<UserInterestTagVo> userInterestTagVoList = userService.getUserInterestTagVoByUserId(userId, 3);
         result.put("userInterestTagList", userInterestTagVoList);
 
         // 유저가 북마크한 채용 목록 가져오기 (최대 4개)
-        List<ReducedEmploymentVo> userEmploymentBookmarkVoList = userService.getUserEmploymentBookmarkVoList(userId, 4);
+        List<ReducedEmploymentVo> userEmploymentBookmarkVoList = userService.getUserEmploymentBookmarkVoList(userId, 4, true);
         result.put("userEmploymentBookmarkList", userEmploymentBookmarkVoList);
 
         // 유저가 좋아요한 채용 목록 가져오기 (최대 4개)
-        List<ReducedEmploymentVo> userEmploymentLikeVoList = userService.getUserEmploymentLikeVoList(userId, 4);
+        List<ReducedEmploymentVo> userEmploymentLikeVoList = userService.getUserEmploymentLikeVoList(userId, 4, true);
         result.put("userEmploymentLikeList", userEmploymentLikeVoList);
 
         BaseResponse<Map<String, Object>> response = new BaseResponse<>(result);
@@ -73,7 +73,7 @@ public class UserController {
 
     @GetMapping("/user/{userId}/bookmark")
     public ResponseEntity<Object> getUserEmploymentBookmarkVoList(@PathVariable Long userId){
-        List<ReducedEmploymentVo> reducedEmploymentVoList = userService.getUserEmploymentBookmarkVoList(userId, null);
+        List<ReducedEmploymentVo> reducedEmploymentVoList = userService.getUserEmploymentBookmarkVoList(userId, null, false);
 
         BaseResponse<List<ReducedEmploymentVo>> response = new BaseResponse<>(reducedEmploymentVoList);
 
@@ -83,7 +83,7 @@ public class UserController {
 
     @GetMapping("/user/{userId}/like")
     public ResponseEntity<Object> getUserEmploymentLikeVoList(@PathVariable Long userId){
-        List<ReducedEmploymentVo> reducedEmploymentVoList = userService.getUserEmploymentLikeVoList(userId, null);
+        List<ReducedEmploymentVo> reducedEmploymentVoList = userService.getUserEmploymentLikeVoList(userId, null, false);
 
         BaseResponse<List<ReducedEmploymentVo>> response = new BaseResponse<>(reducedEmploymentVoList);
         return ResponseEntity.ok(response);
