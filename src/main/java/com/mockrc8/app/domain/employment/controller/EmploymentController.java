@@ -7,6 +7,7 @@ import com.mockrc8.app.domain.company.dto.Image;
 import com.mockrc8.app.domain.employment.service.EmploymentService;
 import com.mockrc8.app.domain.employment.dto.Employment;
 import com.mockrc8.app.domain.employment.dto.TechSkill;
+import com.mockrc8.app.global.config.BaseResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,7 +39,7 @@ public class EmploymentController {
      */
 
     @GetMapping("/{employmentId}")
-    public ResponseEntity<Map<String, Object>> getEmploymentById(@PathVariable Long employmentId){
+    public ResponseEntity<Object> getEmploymentById(@PathVariable Long employmentId){
         Employment employment = employmentService.getEmploymentById(employmentId);
         Long companyId = employment.getCompanyId();
 
@@ -68,16 +69,26 @@ public class EmploymentController {
 
         List<Employment> employmentList = new ArrayList<>();
         Integer maxCount = 16;
-        Integer count = 0;
 
         while(it.hasNext()){
             CompanyTag companyTag = it.next();
-            count = maxCount - count;
-            employmentList.addAll(employmentService.getEmploymentListByCompanyTagName(companyTag.getCompanyTagName(), employmentId, maxCount));
 
-            if(employmentList.size() == maxCount){
-                break;
+
+            List<Employment> employmentListByCompanyTagName = employmentService.getEmploymentListByCompanyTagName(companyTag.getCompanyTagName(), employmentId, maxCount);
+            Iterator<Employment> it2 = employmentListByCompanyTagName.iterator();
+
+            while(it2.hasNext()){
+                Employment employmentByCompanyTagName = it2.next();
+                if(!employmentList.contains(employmentByCompanyTagName)){
+                    employmentList.add(employmentByCompanyTagName);
+                }
+
+                if(employmentList.size() == maxCount){
+                    break;
+                }
             }
+
+            
         }
         result.put("associatedEmployment", employmentList);
 
@@ -87,7 +98,8 @@ public class EmploymentController {
         result.put("techSkill", employmentTechSkillList);
 
 
-        return ResponseEntity.ok(result);
+        BaseResponse<Map<String, Object>> response = new BaseResponse<>(result);
+        return ResponseEntity.ok(response);
     }
 
 
