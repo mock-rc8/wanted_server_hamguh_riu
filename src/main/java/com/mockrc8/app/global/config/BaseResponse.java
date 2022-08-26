@@ -25,4 +25,12 @@ public class BaseResponse<T> {
         this.result = result;
     }
 
+    public BaseResponse(String message ,T result) {
+        this.isSuccess = true;
+        this.message = message;
+        this.code = 1000;
+        this.result = result;
+    }
+
+
 }

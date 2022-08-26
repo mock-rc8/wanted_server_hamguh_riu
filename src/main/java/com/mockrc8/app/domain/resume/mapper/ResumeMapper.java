@@ -1,5 +1,12 @@
 package com.mockrc8.app.domain.resume.mapper;
 
+import com.mockrc8.app.domain.resume.dto.Award.AwardDto;
+import com.mockrc8.app.domain.resume.dto.Career.CareerDto;
+import com.mockrc8.app.domain.resume.dto.Career.Career_accomplishmentDto;
+import com.mockrc8.app.domain.resume.dto.Degree.DegreeDto;
+import com.mockrc8.app.domain.resume.dto.Language.Language_skillDto;
+import com.mockrc8.app.domain.resume.dto.Language.Language_testDto;
+import com.mockrc8.app.domain.resume.dto.TechSkill.PostResume_tech_skillDto;
 import com.mockrc8.app.domain.resume.vo.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -23,4 +30,20 @@ public interface ResumeMapper {
     List<Resume_tech_skill> getTechSkills(@Param("resumeId") Integer resumeId);
 
     List<Resume_language_skill> getLanguage(@Param("resumeId") Integer resumeId);
+
+    void postResumeCareer(CareerDto dto);
+
+    void postResumeCareer_accomplishment(List<Career_accomplishmentDto> dto);
+
+    void postResumeAward(AwardDto dto);
+
+    void postResumeDegree(DegreeDto degreeDto);
+
+    void postLanguageSkill(Language_skillDto dto);
+
+    void postResumeLanguageTest(List<Language_testDto> dto);
+
+    Long getTechSkillId(String skillName);
+
+    void postResumeTechSkills(@Param("resumeId") Long resumeId, @Param("resumeTechSkillId") Long resumeTechSkillId);
 }
