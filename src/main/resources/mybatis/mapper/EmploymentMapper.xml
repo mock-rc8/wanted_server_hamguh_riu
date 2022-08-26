@@ -98,31 +98,50 @@
 
 
 
-<!--    성과급, 상여금, 인센티브 -->
-    <select id="getEmploymentListByCompensation" resultMap="ReducedEmploymentVo">
+<!-- 태그 이름 배열을 가지고 조회 -->
+    <select id="getEmploymentListByTagNames" resultMap="ReducedEmploymentVo">
         select * from (select employment_id, title, location,
             (select name from company where company_id = employment.company_id) as company_name,
             (referral_compensation + employment.user_compensation) as compensation
-                from employment where company_id in (select company_id from company_tag where hashtag_name in ('성과급', '상여금', '인센티브'))) as employment_info
-                    left outer join
-                    (select employment_id, image_url from (select * from employment_image group by employment_id) as employment_image
-                        left outer join
-                        (select * from image) as image
-                        using(image_id)) as image
-                    using(employment_id)
-    </select>
-
-    <select id="getReducedEmploymentByEmploymentId" resultMap="ReducedEmploymentVo">
-        select employment_id, title, location, name as company_name,
-               (referral_compensation + user_compensation) as compensation,
-               image_id, image_url
-        from ((select employment_id, image_id from employment_image group by employment_id) as e_image
-            left outer join image using(image_id)
-            left outer join employment using(employment_id)
-            left outer join company using(company_id)) where employment_id = #{employmentId}
+        from employment where company_id in
+            (select company_id from company_tag where hashtag_name in
+                <foreach collection="array" item="tagName" open="(" close=")" separator=",">
+                    #{tagName}
+                </foreach>
+            )
+        ) as employment_info
+            left outer join
+        (select employment_id, image_url from (select * from employment_image group by employment_id) as employment_image
+                left outer join
+            (select * from image) as image
+                using(image_id)) as image
+        using(employment_id)
     </select>
 
 <!--    채용 마감 임박 -->
+    <select id="getEmploymentListByCloseSoon" resultMap="ReducedEmploymentVo">
+        select employment_id, title, location, name as company_name,
+        (referral_compensation + user_compensation) as compensation,
+        image_id, image_url
+        from (select * from employment where deadline between date(now()) and last_day(now())) as e
+        left outer join company using(company_id)
+        left outer join
+        (select * from employment_image left outer join image using(image_id) group by employment_id) as img using(employment_id)
+
+    </select>
+
+
+<!--채용 id로 채용 조회-->
+    <select id="getReducedEmploymentByEmploymentId" resultMap="ReducedEmploymentVo">
+        select employment_id, title, location, name as company_name,
+               logo_image_url,
+               (referral_compensation + user_compensation) as compensation,
+               image_id, image_url
+        from ((select employment_id, image_id from employment_image group by employment_id) as e_image
+                 left outer join image using(image_id)
+                 left outer join employment using(employment_id)
+                 left outer join company using(company_id)) where employment_id = #{employmentId}
+    </select>
 
 
     <resultMap id="ReducedEmploymentVo" type="ReducedEmploymentVo">

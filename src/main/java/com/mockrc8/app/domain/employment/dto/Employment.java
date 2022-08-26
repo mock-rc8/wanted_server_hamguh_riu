@@ -40,4 +40,14 @@ public class Employment {
         this.compensation = compensation;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Employment && obj != null){
+            Employment other = (Employment)obj;
+            if(other.getEmploymentId().equals(this.employmentId)){
+                return true;
+            }
+        }
+        return false;
+    }
 }
