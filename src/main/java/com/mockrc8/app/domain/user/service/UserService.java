@@ -7,10 +7,7 @@ import com.mockrc8.app.domain.user.mapper.UserMapper;
 import com.mockrc8.app.domain.user.vo.*;
 import com.mockrc8.app.global.config.BaseResponse;
 import com.mockrc8.app.global.error.ErrorCode;
-import com.mockrc8.app.global.error.exception.User.EmailDuplicationException;
-import com.mockrc8.app.global.error.exception.User.PasswordNotMatchException;
-import com.mockrc8.app.global.error.exception.User.PhoneNumberDuplicationException;
-import com.mockrc8.app.global.error.exception.User.UserNotFoundException;
+import com.mockrc8.app.global.error.exception.User.*;
 import com.mockrc8.app.global.oAuth.dto.AccessToken;
 import com.mockrc8.app.global.oAuth.dto.ProfileDto;
 import com.mockrc8.app.global.oAuth.service.ProviderService;
@@ -27,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.mockrc8.app.global.error.ErrorCode.*;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -41,13 +40,13 @@ public class UserService {
     @Transactional
     public ResponseEntity<UserRegisterResponseDto> registerUser(UserRegisterRequestDto userRegisterRequestDto) {
         if (userMapper.checkEmail((userRegisterRequestDto.getUserEmail())) == 1) {
-            throw new EmailDuplicationException(ErrorCode.EMAIL_DUPLICATION);
+            throw new EmailDuplicationException(EMAIL_DUPLICATION);
         }
         if(!userRegisterRequestDto.getUserPassword().equals(userRegisterRequestDto.getUserPasswordConfirm())){
-            throw new PasswordNotMatchException(ErrorCode.PASSWORD_NOT_MATCH);
+            throw new PasswordNotMatchException(PASSWORD_NOT_MATCH);
         }
         if(userMapper.checkPhoneNumber(userRegisterRequestDto.getUserPhoneNumber()) == 1){
-            throw new PhoneNumberDuplicationException(ErrorCode.PHONE_NUMBER_DUPLICATION);
+            throw new PhoneNumberDuplicationException(PHONE_NUMBER_DUPLICATION);
         }
         userRegisterRequestDto.setUserPassword(passwordEncoder.encode(userRegisterRequestDto.getUserPassword()));
         final User userVO = userRegisterRequestDto.toEntity();
@@ -84,10 +83,10 @@ public class UserService {
     public ResponseEntity<UserLoginResponseDto> loginUser(UserLoginRequestDto userLoginRequestDto) {
         final User user = userMapper.findUserByEmail(userLoginRequestDto.getUserEmail());
         if (user == null) {
-            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+            throw new UserNotFoundException(USER_NOT_FOUND);
         }
         if (!passwordEncoder.matches(userLoginRequestDto.getUserPassword(), user.getPassword())) {
-            throw new PasswordNotMatchException(ErrorCode.PASSWORD_NOT_MATCH);
+            throw new PasswordNotMatchException(PASSWORD_NOT_MATCH);
         }
         String refreshToken = jwtService.createRefreshToken();
         int result = userMapper.updateRefreshToken(user.getUser_id(), refreshToken);
@@ -125,6 +124,20 @@ public class UserService {
     }
 
 
+    public void checkUserMatch(String userEmail, Long userId){
+        User user = userMapper.findUserByEmail(userEmail);  // 지금 요청하는 유저의 정보
+        UserProfileVo userProfile = userMapper.getUserProfile(userId);    // 유저가 조회하려는 유저의 정보
+
+        if (user == null || userProfile == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        if(!user.getUser_id().equals(userProfile.getUser_id())){
+
+            // 조회하는 유저와 조회 당하는 유저의 id가 일치하지 않는 경우
+            throw new UserNotMatchedException(USER_NOT_MATCH);
+        }
+    }
 
     public UserProfileVo getUserProfile(Long userId){
         return userMapper.getUserProfile(userId);

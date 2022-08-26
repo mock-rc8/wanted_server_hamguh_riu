@@ -17,6 +17,7 @@ public enum ErrorCode {
     USER_NOT_FOUND(400,"U003", "User Not Found"),
     PASSWORD_NOT_MATCH(400,"U004", "Password Not Match"),
     PHONE_NUMBER_DUPLICATION(400, "U005","이미 존재하는 핸드폰 번호입니다"),
+    USER_NOT_MATCH(400, "U006", "User Not match"),
 
     //Company
     COMPANY_NOT_EXIST(400, "COM001", "Company not exists"),

@@ -6,12 +6,18 @@ import com.mockrc8.app.domain.user.service.UserService;
 import com.mockrc8.app.domain.user.vo.UserInterestTagVo;
 import com.mockrc8.app.domain.user.vo.UserProfileVo;
 import com.mockrc8.app.global.config.BaseResponse;
+import com.mockrc8.app.global.error.ErrorCode;
+import com.mockrc8.app.global.error.exception.User.UserNotFoundException;
+import com.mockrc8.app.global.oAuth.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -45,11 +51,18 @@ public class UserController {
 
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<Object> getUserProfile(@PathVariable Long userId){
+    public ResponseEntity<Object> getUserProfile(@CurrentUser String userEmail, @PathVariable Long userId){
+
+        if(userEmail == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        // 유저가 존재하는지, 유저가 일치하는지 검증
+        userService.checkUserMatch(userEmail, userId);
 
         Map<String, Object> result = new HashMap<>();
 
-        // 유저 정보 가져오기
+        //유저 정보 가져오기
         UserProfileVo userProfileVo = userService.getUserProfile(userId);
         result.put("userProfile", userProfileVo);
 
@@ -72,7 +85,10 @@ public class UserController {
 
 
     @GetMapping("/user/{userId}/bookmark")
-    public ResponseEntity<Object> getUserEmploymentBookmarkVoList(@PathVariable Long userId){
+    public ResponseEntity<Object> getUserEmploymentBookmarkVoList(@CurrentUser String userEmail, @PathVariable Long userId){
+
+        userService.checkUserMatch(userEmail, userId);
+
         List<ReducedEmploymentVo> reducedEmploymentVoList = userService.getUserEmploymentBookmarkVoList(userId, null);
 
         BaseResponse<List<ReducedEmploymentVo>> response = new BaseResponse<>(reducedEmploymentVoList);
@@ -82,7 +98,10 @@ public class UserController {
 
 
     @GetMapping("/user/{userId}/like")
-    public ResponseEntity<Object> getUserEmploymentLikeVoList(@PathVariable Long userId){
+    public ResponseEntity<Object> getUserEmploymentLikeVoList(@CurrentUser String userEmail, @PathVariable Long userId){
+
+        userService.checkUserMatch(userEmail, userId);
+
         List<ReducedEmploymentVo> reducedEmploymentVoList = userService.getUserEmploymentLikeVoList(userId, null);
 
         BaseResponse<List<ReducedEmploymentVo>> response = new BaseResponse<>(reducedEmploymentVoList);

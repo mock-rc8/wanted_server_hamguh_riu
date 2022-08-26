@@ -14,6 +14,7 @@ public interface UserMapper {
     public int checkEmail(String userEmail);
     public int checkPhoneNumber(String userPhoneNumber);
     public User findUserByEmail(String userEmail);
+//    Integer checkUserById(Long userId);
     public int updateRefreshToken(@Param("userId") Long userId, @Param("refreshToken") String refreshToken);
 
     List<UserInterestTagVo> getUserInterestTagVoByUserId(Long userId, Integer maxCount);

@@ -93,10 +93,24 @@ public class EmploymentController {
 
     @GetMapping("themes/incentive")
     public ResponseEntity<Object> getEmploymentListByCompensation(){
-        return employmentService.getEmploymentListByCompensation();
+        String[] tagNames = {"성과급", "상여금", "인센티브"};
+        return employmentService.getEmploymentListByTagNames(tagNames);
     }
 
+    @GetMapping("themes/salarytop")
+    public ResponseEntity<Object> getEmploymentListBySalaryTop(){
+        String[] tagNames = {"연봉상위1%", "연봉상위2~5%", "연봉상위6~10%"};
+        return employmentService.getEmploymentListByTagNames(tagNames);
+    }
 
-//    @GetMapping("themas/closesoon")
-//    public ResponseEntity<Object>
+    @GetMapping("themes/4dayswork")
+    public ResponseEntity<Object> getEmploymentListBy4DaysWork(){
+        String[] tagNames = {"야근없음", "주35시간", "주4일근무"};
+        return employmentService.getEmploymentListByTagNames(tagNames);
+    }
+
+    @GetMapping("themes/closesoon")
+    public ResponseEntity<Object> getEmploymentListByCloseSoon(){
+        return employmentService.getEmploymentListByCloseSoon();
+    }
 }

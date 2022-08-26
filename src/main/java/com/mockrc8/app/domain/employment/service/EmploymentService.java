@@ -53,8 +53,8 @@ public class EmploymentService {
 
 
     // 성과급, 상여금, 인센티브 태그 조회
-    public ResponseEntity<Object> getEmploymentListByCompensation(){
-        List<ReducedEmploymentVo> reducedEmploymentVoList = employmentMapper.getEmploymentListByCompensation();
+    public ResponseEntity<Object> getEmploymentListByTagNames(String[] tagNames){
+        List<ReducedEmploymentVo> reducedEmploymentVoList = employmentMapper.getEmploymentListByTagNames(tagNames);
 
         BaseResponse<List<ReducedEmploymentVo>> response = new BaseResponse<>(reducedEmploymentVoList);
         return ResponseEntity.ok(response);

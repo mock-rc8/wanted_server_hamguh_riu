@@ -34,6 +34,6 @@ public interface EmploymentMapper {
     TechSkill getTechSkillById(Long techSkillId);
 
     ReducedEmploymentVo getReducedEmploymentByEmploymentId(Long employmentId);
-    List<ReducedEmploymentVo> getEmploymentListByCompensation();
+    List<ReducedEmploymentVo> getEmploymentListByTagNames(String[] tagNames);
     List<ReducedEmploymentVo> getEmploymentListByCloseSoon();
 }
