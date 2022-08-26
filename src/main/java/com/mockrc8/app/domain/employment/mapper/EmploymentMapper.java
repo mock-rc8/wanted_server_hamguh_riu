@@ -1,10 +1,12 @@
 package com.mockrc8.app.domain.employment.mapper;
 
+import com.github.pagehelper.Page;
 import com.mockrc8.app.domain.company.dto.Image;
 import com.mockrc8.app.domain.employment.dto.Employment;
 import com.mockrc8.app.domain.employment.dto.EmploymentImage;
 import com.mockrc8.app.domain.employment.dto.EmploymentTechSkill;
 import com.mockrc8.app.domain.employment.dto.TechSkill;
+import com.mockrc8.app.domain.employment.vo.EmploymentLikeInfoVo;
 import com.mockrc8.app.domain.employment.vo.ReducedEmploymentVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -16,10 +18,12 @@ import java.util.Map;
 public interface EmploymentMapper {
 
     Integer checkEmploymentId(Long employmentId);
-    List<Employment> getEmploymentListByCompanyTagName(Map<String, Object> map);
+    List<Employment> getEmploymentListByCompanyTagName(String companyTagName, Long employmentId);
     List<Employment> getReducedEmploymentListByCompanyId(@Param("companyId") Long companyId);
     List<Employment> getEmploymentList();
     Employment getEmploymentById(Long employmentId);
+
+    EmploymentLikeInfoVo getEmploymentLikeInfoVo(Long employmentId);
 
 
     //employment_image
@@ -27,13 +31,12 @@ public interface EmploymentMapper {
     EmploymentImage getEmploymentImageByEmploymentId(Long employmentId);
 
     //employment_tech_skill
-//    Integer checkEmploymentTechSkillByEmploymentId(Long employmentId);
     List<EmploymentTechSkill> getEmploymentTechSkillListByEmploymentId(Long employmentId);
 
     //tech_skill
     TechSkill getTechSkillById(Long techSkillId);
 
     ReducedEmploymentVo getReducedEmploymentByEmploymentId(Long employmentId);
-    List<ReducedEmploymentVo> getEmploymentListByTagNames(String[] tagNames);
-    List<ReducedEmploymentVo> getEmploymentListByCloseSoon();
+    Page<ReducedEmploymentVo> getEmploymentListByTagNames(String[] tagNames);
+    Page<ReducedEmploymentVo> getEmploymentListByCloseSoon();
 }

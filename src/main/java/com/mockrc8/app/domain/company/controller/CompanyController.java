@@ -16,9 +16,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.mockrc8.app.global.util.InfinityScroll.getScrollCount;
 
 @RestController
 @RequestMapping("/company")
@@ -41,17 +44,20 @@ public class CompanyController {
 
     /*
     회사 태그로 회사 목록 조회 API
+    무한 스크롤 적용
      */
     @GetMapping("/tag/{hashtag_id}")
-    public ResponseEntity<Object> getCompanyTagListByIdAndRandomList(@PathVariable Long hashtag_id){
+    public ResponseEntity<Object> getCompanyTagListByIdAndRandomList(HttpServletRequest request, @PathVariable Long hashtag_id){
 
         companyService.checkCompanyTagId(hashtag_id);
+
+        Integer scrollCount = getScrollCount(request);
 
         Map<String, Object> result = new HashMap<>();
         List<CompanyTag> companyTagList = companyService.getCompanyTagListByIdAndRandomList(hashtag_id);
         result.put("searchedTagList", companyTagList);
 
-        List<CompanyListSearchedByTagVo> companyList = companyService.getCompanyListByTagId(hashtag_id);
+        List<CompanyListSearchedByTagVo> companyList = companyService.getCompanyListByTagId(hashtag_id, scrollCount);
         result.put("companyList", companyList);
 
         List<CompanyTagGroupedTopicVo> companyTagListGroupedTopic = companyService.getCompanyTagGroupedByTopic();

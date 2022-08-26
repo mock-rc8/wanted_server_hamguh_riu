@@ -1,6 +1,7 @@
 package com.mockrc8.app.domain.employment.service;
 
 
+import com.github.pagehelper.PageHelper;
 import com.mockrc8.app.domain.company.dto.Image;
 import com.mockrc8.app.domain.company.mapper.CompanyMapper;
 import com.mockrc8.app.domain.employment.mapper.EmploymentMapper;
@@ -8,7 +9,9 @@ import com.mockrc8.app.domain.employment.dto.Employment;
 import com.mockrc8.app.domain.employment.dto.EmploymentImage;
 import com.mockrc8.app.domain.employment.dto.EmploymentTechSkill;
 import com.mockrc8.app.domain.employment.dto.TechSkill;
+import com.mockrc8.app.domain.employment.vo.EmploymentLikeInfoVo;
 import com.mockrc8.app.domain.employment.vo.ReducedEmploymentVo;
+import com.mockrc8.app.domain.user.mapper.UserMapper;
 import com.mockrc8.app.global.config.BaseResponse;
 import com.mockrc8.app.global.error.exception.company.ImageNotExistException;
 import com.mockrc8.app.global.error.exception.employment.EmploymentNotExistException;
@@ -17,6 +20,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 import static com.mockrc8.app.global.error.ErrorCode.*;
@@ -27,6 +31,7 @@ public class EmploymentService {
 
     private CompanyMapper companyMapper;
     private EmploymentMapper employmentMapper;
+    private UserMapper userMapper;
 
 
     // 채용 목록 전체 조회
@@ -40,20 +45,14 @@ public class EmploymentService {
     }
 
     // 태그명으로 채용목록 조회
-    public List<Employment> getEmploymentListByCompanyTagName(String companyTagName, Long employmentId, Integer count){
-
-        companyTagName = "%" + companyTagName + "%";
-        Map<String, Object> map = new HashMap<>();
-        map.put("companyTagName", companyTagName);
-        map.put("employmentId", employmentId);
-        map.put("count", count);
-
-        return employmentMapper.getEmploymentListByCompanyTagName(map);
+    public List<Employment> getEmploymentListByCompanyTagName(String companyTagName, Long employmentId){
+        return employmentMapper.getEmploymentListByCompanyTagName(companyTagName, employmentId);
     }
 
 
     // 성과급, 상여금, 인센티브 태그 조회
-    public ResponseEntity<Object> getEmploymentListByTagNames(String[] tagNames){
+    public ResponseEntity<Object> getEmploymentListByTagNames(String[] tagNames, Integer scrollCount){
+        PageHelper.startPage(scrollCount, 10);
         List<ReducedEmploymentVo> reducedEmploymentVoList = employmentMapper.getEmploymentListByTagNames(tagNames);
 
         BaseResponse<List<ReducedEmploymentVo>> response = new BaseResponse<>(reducedEmploymentVoList);
@@ -61,7 +60,8 @@ public class EmploymentService {
     }
 
     // 채용 마감 임박
-    public ResponseEntity<Object> getEmploymentListByCloseSoon(){
+    public ResponseEntity<Object> getEmploymentListByCloseSoon(Integer scrollCount){
+        PageHelper.startPage(scrollCount, 10);
         List<ReducedEmploymentVo> reducedEmploymentVoList = employmentMapper.getEmploymentListByCloseSoon();
 
         BaseResponse<List<ReducedEmploymentVo>> response = new BaseResponse<>(reducedEmploymentVoList);
@@ -99,7 +99,7 @@ public class EmploymentService {
 //        return companyMapper.getImageById(imageId);
 //    }
 
-    public List<Image> getEmploymentImageListByCompanyId(Long employmentId){
+    public List<Image> getEmploymentImageListByEmploymentId(Long employmentId){
         List<EmploymentImage> employmentImageList = employmentMapper.getEmploymentImageListByEmploymentId(employmentId);
 
 
@@ -146,9 +146,16 @@ public class EmploymentService {
         return techSkillList;
     }
 
+    public EmploymentLikeInfoVo getEmploymentLikeInfoVo(Long employmentId){
+        return employmentMapper.getEmploymentLikeInfoVo(employmentId);
+    }
+
+
+
+
 
     // ReducedEmployment를 employmentId로 조회
-    ReducedEmploymentVo getReducedEmploymentByEmploymentId(Long employmentId){
+    public ReducedEmploymentVo getReducedEmploymentByEmploymentId(Long employmentId){
         if(employmentMapper.checkEmploymentId(employmentId) == 0){
             throw new EmploymentNotExistException(EMPLOYMENT_NOT_EXIST);
         }

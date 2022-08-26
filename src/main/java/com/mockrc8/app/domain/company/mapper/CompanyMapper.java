@@ -1,5 +1,6 @@
 package com.mockrc8.app.domain.company.mapper;
 
+import com.github.pagehelper.Page;
 import com.mockrc8.app.domain.company.dto.*;
 import com.mockrc8.app.domain.company.vo.CompanyDetailVo;
 import com.mockrc8.app.domain.company.vo.CompanyListSearchedByTagVo;
@@ -32,7 +33,7 @@ public interface CompanyMapper {
     // 8-24
     Integer checkCompanyTagId(Long companyTagId);
     List<CompanyTag> getCompanyTagListByIdAndRandomList(Long hashtagId);
-    List<CompanyListSearchedByTagVo> getCompanyListByTagId(Long hashtagId);
+    Page<CompanyListSearchedByTagVo> getCompanyListByTagId(Long hashtagId);
     List<CompanyTagGroupedTopicVo> getCompanyTagGroupedByTopic();
 
     //company_news

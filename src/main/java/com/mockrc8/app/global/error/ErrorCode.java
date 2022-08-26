@@ -18,7 +18,8 @@ public enum ErrorCode {
     PASSWORD_NOT_MATCH(400,"U004", "Password Not Match"),
     PHONE_NUMBER_DUPLICATION(400, "U005","이미 존재하는 핸드폰 번호입니다"),
     USER_NOT_MATCH(400, "U006", "User Not match"),
-
+    UNABLE_TO_BOOKMARK(400, "U007", "User cannot change bookmark status"),
+    UNABLE_TO_LIKE(400, "U008", "User cannot change like status"),
     //Company
     COMPANY_NOT_EXIST(400, "COM001", "Company not exists"),
     COMPANY_TAG_NOT_EXIST(400, "COM002", "CompanyTag not exists"),
