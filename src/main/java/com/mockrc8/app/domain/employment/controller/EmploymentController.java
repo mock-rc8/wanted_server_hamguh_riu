@@ -14,7 +14,6 @@ import com.mockrc8.app.global.config.BaseResponse;
 import com.mockrc8.app.global.error.ErrorCode;
 import com.mockrc8.app.global.error.exception.User.UserNotFoundException;
 import com.mockrc8.app.global.oAuth.CurrentUser;
-import com.mockrc8.app.global.util.InfinityScroll;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,12 +32,12 @@ public class EmploymentController {
     private CompanyService companyService;
     private UserService userService;
 
-    @GetMapping()
-    public ResponseEntity<List<Employment>> getEmploymentList(){
-        List<Employment> employmentList = employmentService.getEmploymentList();
-
-        return ResponseEntity.ok(employmentList);
-    }
+//    @GetMapping()
+//    public ResponseEntity<List<Employment>> getEmploymentList(){
+//        List<Employment> employmentList = employmentService.getEmploymentList();
+//
+//        return ResponseEntity.ok(employmentList);
+//    }
 
 
     // 유저의 채용 북마크 API
@@ -50,14 +49,22 @@ public class EmploymentController {
         }
 
         User user = userService.findUserByEmail(userEmail);
+        Long userId = user.getUser_id();
 
         if (user == null){
             throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
         }
 
-        userService.updateUserBookmark(user.getUser_id(), employmentId);
+        userService.updateUserBookmark(userId, employmentId);
 
-        BaseResponse<String> response = new BaseResponse<>("ok");
+        // 유저가 북마크했는지 하지 않았는지의 정보
+        BaseResponse<String> response;
+        if(userService.checkUserBookmarked(userId, employmentId) == 1){
+            response = new BaseResponse<>("bookmarked");
+        }else{
+            response = new BaseResponse<>("not bookmarked");
+        }
+
         return ResponseEntity.ok(response);
     }
 
@@ -89,7 +96,8 @@ public class EmploymentController {
 
     // 채용 ID로 특정 채용 조회 API
     @GetMapping("/{employmentId}")
-    public ResponseEntity<Object> getEmploymentById(@PathVariable Long employmentId){
+    public ResponseEntity<Object> getEmploymentById(@CurrentUser String userEmail,
+                                                    @PathVariable Long employmentId){
         Employment employment = employmentService.getEmploymentById(employmentId);
         Long companyId = employment.getCompanyId();
 
@@ -143,6 +151,24 @@ public class EmploymentController {
         // 이 채용을 좋아요한 유저의 수, 그 유저들의 프로필 이미지 목록
         EmploymentLikeInfoVo employmentLikeInfoVo = employmentService.getEmploymentLikeInfoVo(employmentId);
         result.put("employmentLikeInfo", employmentLikeInfoVo);
+
+
+        // 로그인 된 유저인 경우에만 팔로우나 북마크 여부를 확인할 수 있음
+        if(userEmail != null){
+            User user = userService.findUserByEmail(userEmail);
+            Long userId = user.getUser_id();
+            if(userService.checkUserBookmarked(userId, employmentId) == 1){
+                result.put("bookmarked", true);
+            }else{
+                result.put("bookmarked", false);
+            }
+
+            if(userService.checkUserCompanyFollowed(userId, companyId) == 1){
+                result.put("followed", true);
+            }else{
+                result.put("followed", false);
+            }
+        }
 
         BaseResponse<Map<String, Object>> response = new BaseResponse<>(result);
         return ResponseEntity.ok(response);

@@ -119,6 +119,10 @@ mapper 인터페이스의 메서드가 단일 책임 원칙을 만족하도록 �
         select if( exists( select * from user_employment_like where user_id = #{userId} and employment_id = #{employmentId}), 1, 0)
     </select>
 
+    <select id="checkUserCompanyFollowed" resultType="Integer">
+        select if( exists( select * from user_company_follow where user_id = #{userId} and company_id = #{companyId}), 1, 0)
+    </select>
+
     <insert id="registerUserBookmark" parameterType="UserEmploymentBookmarkDto" useGeneratedKeys="true" keyProperty="user_employment_bookmark_id">
         insert into user_employment_bookmark(user_id, employment_id) values(#{userEmploymentBookmarkDto.user_id}, #{userEmploymentBookmarkDto.employment_id})
     </insert>
@@ -134,6 +138,15 @@ mapper 인터페이스의 메서드가 단일 책임 원칙을 만족하도록 �
 
     <delete id="deleteUserLike">
         delete from user_employment_like where user_id = #{userEmploymentLikeDto.user_id} and employment_id = #{userEmploymentLikeDto.employment_id}
+    </delete>
+
+
+    <insert id="registerUserCompanyFollow" parameterType="UserCompanyFollowDto" useGeneratedKeys="true" keyProperty="user_company_follow_id">
+        insert into user_company_follow(user_id, company_id) values(#{userCompanyFollowDto.user_id}, #{userCompanyFollowDto.company_id})
+    </insert>
+
+    <delete id="deleteUserCompanyFollow">
+        delete from user_company_follow where user_id = #{userCompanyFollowDto.user_id} and company_id = #{userCompanyFollowDto.company_id}
     </delete>
 
 </mapper>

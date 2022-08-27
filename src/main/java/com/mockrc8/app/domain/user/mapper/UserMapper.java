@@ -3,6 +3,7 @@ package com.mockrc8.app.domain.user.mapper;
 import com.github.pagehelper.Page;
 import com.mockrc8.app.domain.employment.vo.EmploymentLikeInfoVo;
 import com.mockrc8.app.domain.employment.vo.ReducedEmploymentVo;
+import com.mockrc8.app.domain.user.dto.UserCompanyFollowDto;
 import com.mockrc8.app.domain.user.dto.UserEmploymentBookmarkDto;
 import com.mockrc8.app.domain.user.dto.UserEmploymentLikeDto;
 import com.mockrc8.app.domain.user.dto.UserRegisterRequestDto;
@@ -25,10 +26,17 @@ public interface UserMapper {
     List<UserInterestTagVo> getUserInterestTagVoByUserId(Long userId, Integer maxCount);
     Integer checkUserLiked(Long userId, Long employmentId);
     Integer checkUserBookmarked(Long userId, Long employmentId);
+    Integer checkUserCompanyFollowed(Long userId, Long companyId);
+
     void registerUserLike(@Param("userEmploymentLikeDto") UserEmploymentLikeDto userEmploymentLikeDto);
     void deleteUserLike(@Param("userEmploymentLikeDto") UserEmploymentLikeDto userEmploymentLikeDto);
+
     void registerUserBookmark(@Param("userEmploymentBookmarkDto") UserEmploymentBookmarkDto userEmploymentBookmarkDto);
     void deleteUserBookmark(@Param("userEmploymentBookmarkDto") UserEmploymentBookmarkDto userEmploymentBookmarkDto);
+
+    void registerUserCompanyFollow(@Param("userCompanyFollowDto") UserCompanyFollowDto userCompanyFollowDto);
+    void deleteUserCompanyFollow(@Param("userCompanyFollowDto") UserCompanyFollowDto userCompanyFollowDto);
+
     UserProfileVo getUserProfile(Long userId);
     Page<ReducedEmploymentVo> getUserEmploymentBookmarkVoList(Long userId, Integer maxCount);
     Page<ReducedEmploymentVo> getUserEmploymentLikeVoList(Long userId, Integer maxCount);
