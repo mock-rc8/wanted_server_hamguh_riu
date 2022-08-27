@@ -11,7 +11,12 @@ import com.mockrc8.app.domain.company.vo.CompanyListSearchedByTagVo;
 import com.mockrc8.app.domain.company.vo.CompanyTagGroupedTopicVo;
 import com.mockrc8.app.domain.employment.service.EmploymentService;
 import com.mockrc8.app.domain.employment.dto.Employment;
+import com.mockrc8.app.domain.user.service.UserService;
+import com.mockrc8.app.domain.user.vo.User;
 import com.mockrc8.app.global.config.BaseResponse;
+import com.mockrc8.app.global.error.ErrorCode;
+import com.mockrc8.app.global.error.exception.User.UserNotFoundException;
+import com.mockrc8.app.global.oAuth.CurrentUser;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,17 +34,35 @@ import static com.mockrc8.app.global.util.InfinityScroll.getScrollCount;
 public class CompanyController {
 
     private CompanyService companyService;
-    private EmploymentService employmentService;
+    private UserService userService;
 
 
+    // 유저의 회사 팔로우 API
+    @PostMapping("/follow/{companyId}")
+    public ResponseEntity<Object> updateUserCompanyFollow(@CurrentUser String userEmail,
+                                                          @PathVariable Long companyId){
+        if(userEmail == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
 
+        User user = userService.findUserByEmail(userEmail);
+        Long userId = user.getUser_id();
 
+        if (user == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
 
-    @GetMapping()
-    public ResponseEntity<List<Company>> getCompanyList(){
-        List<Company> companyList = companyService.getCompanyList();
+        userService.updateUserCompanyFollow(userId, companyId);
 
-        return ResponseEntity.ok(companyList);
+        // 유저가 팔로우 했는지 하지 않았는지의 정보
+        BaseResponse<String> response;
+        if(userService.checkUserCompanyFollowed(userId, companyId) == 1){
+            response = new BaseResponse<>("followed");
+        }else{
+            response = new BaseResponse<>("not followed");
+        }
+
+        return ResponseEntity.ok(response);
     }
 
     /*

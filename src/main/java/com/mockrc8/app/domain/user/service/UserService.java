@@ -141,6 +141,27 @@ public class UserService {
         }
     }
 
+    // 유저가 해당 채용을 북마크 했다면 1, 아니라면 0 반환
+    public Integer checkUserBookmarked(Long userId, Long employmentId){
+        Integer isChecked = userMapper.checkUserBookmarked(userId, employmentId);
+
+        if(isChecked == 1){
+            return 1;
+        }
+        return 0;
+    }
+
+    // 유저가 해당 회사를 팔로우했다면 1, 아니라면 0 반환
+    public Integer checkUserCompanyFollowed(Long userId, Long companyId){
+        Integer isChecked = userMapper.checkUserCompanyFollowed(userId, companyId);
+
+        if(isChecked == 1){
+            return 1;
+        }
+        return 0;
+    }
+
+
     public UserProfileVo getUserProfile(Long userId){
         return userMapper.getUserProfile(userId);
     }
@@ -215,6 +236,29 @@ public class UserService {
     }
 
 
+    public void updateUserCompanyFollow(Long userId, Long companyId){
+
+        UserCompanyFollowDto userCompanyFollowDto = new UserCompanyFollowDto(userId, companyId);
+        // 유저가 팔로우했다면
+        if(userMapper.checkUserCompanyFollowed(userId, companyId) == 1){
+            // 팔로우 해제
+            userMapper.deleteUserCompanyFollow(userCompanyFollowDto);
+
+            // 팔로우가 해제되지 않았다면
+            if(userMapper.checkUserCompanyFollowed(userId, companyId) == 1){
+                throw new UnableFollowException(UNABLE_TO_FOLLOW);
+            }
+
+        } else {
+            // 팔로우
+            userMapper.registerUserCompanyFollow(userCompanyFollowDto);
+
+            // 팔로우가 등록되지 않았다면
+            if(userCompanyFollowDto.getUser_company_follow_id() == null){
+                throw new UnableFollowException(UNABLE_TO_FOLLOW);
+            }
+        }
+    }
 
 
 
