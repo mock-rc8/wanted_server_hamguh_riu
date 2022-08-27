@@ -1,5 +1,7 @@
 package com.mockrc8.app.domain.user.service;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.mockrc8.app.domain.employment.mapper.EmploymentMapper;
 import com.mockrc8.app.domain.employment.vo.ReducedEmploymentVo;
 import com.mockrc8.app.domain.user.dto.*;
@@ -144,47 +146,75 @@ public class UserService {
     }
 
     // 유저가 북마크한 누른 채용 목록( 이미지 하나, 소개글은 제외하는 간략화한 채용 객체 목록)
-    public List<ReducedEmploymentVo> getUserEmploymentBookmarkVoList(Long userId, Integer maxCount){
-
-        List<UserEmploymentBookmarkVo> userEmploymentBookmarkList = userMapper.getUserEmploymentBookmarkVoList(userId, maxCount);
-        Iterator<UserEmploymentBookmarkVo> it = userEmploymentBookmarkList.iterator();
-
-        List<ReducedEmploymentVo> reducedEmploymentVoList = new ArrayList<>();
-
-        while(it.hasNext()){
-            UserEmploymentBookmarkVo userEmploymentBookmarkVo = it.next();
-            Long employmentId = userEmploymentBookmarkVo.getEmployment_id();
-            ReducedEmploymentVo reducedEmployment = employmentMapper.getReducedEmploymentByEmploymentId(employmentId);
-
-            reducedEmploymentVoList.add(reducedEmployment);
+    public List<ReducedEmploymentVo> getUserEmploymentBookmarkVoList(Long userId, Integer maxCount, Integer scrollCount){
+        if(scrollCount != null){
+            PageHelper.startPage(scrollCount, 10);
         }
-
-        return reducedEmploymentVoList;
+        return userMapper.getUserEmploymentBookmarkVoList(userId, maxCount);
     }
 
 
     // 유저가 좋아요를 누른 채용 목록( 이미지 하나, 소개글은 제외하는 간략화한 채용 객체 목록)
-    public List<ReducedEmploymentVo> getUserEmploymentLikeVoList(Long userId, Integer maxCount){
-
-        List<UserEmploymentLikeVo> userEmploymentLikeVoList = userMapper.getUserEmploymentLikeVoList(userId, maxCount);
-        Iterator<UserEmploymentLikeVo> it = userEmploymentLikeVoList.iterator();
-
-        List<ReducedEmploymentVo> reducedEmploymentVoList = new ArrayList<>();
-
-        while(it.hasNext()){
-            UserEmploymentLikeVo userEmploymentBookmarkVo = it.next();
-            Long employmentId = userEmploymentBookmarkVo.getEmployment_id();
-            ReducedEmploymentVo reducedEmployment = employmentMapper.getReducedEmploymentByEmploymentId(employmentId);
-
-            reducedEmploymentVoList.add(reducedEmployment);
+    public List<ReducedEmploymentVo> getUserEmploymentLikeVoList(Long userId, Integer maxCount, Integer scrollCount){
+        if(scrollCount != null){
+            PageHelper.startPage(scrollCount, 10);
         }
+        return userMapper.getUserEmploymentLikeVoList(userId, maxCount);
 
-        return reducedEmploymentVoList;
     }
 
     public List<UserInterestTagVo> getUserInterestTagVoByUserId(Long userId, Integer maxCount){
         return userMapper.getUserInterestTagVoByUserId(userId, maxCount);
     }
+
+    public void updateUserBookmark(Long userId, Long employmentId){
+
+        UserEmploymentBookmarkDto userEmploymentBookmarkDto = new UserEmploymentBookmarkDto(userId, employmentId);
+        // 유저가 북마크했다면
+        if(userMapper.checkUserBookmarked(userId, employmentId) == 1){
+            // 북마크 해제
+            userMapper.deleteUserBookmark(userEmploymentBookmarkDto);
+
+            // 북마크가 해제되지 않았다면
+            if(userMapper.checkUserBookmarked(userId, employmentId) == 1){
+                throw new UnableBookmarkException(UNABLE_TO_BOOKMARK);
+            }
+
+        } else {
+            // 북마크
+            userMapper.registerUserBookmark(userEmploymentBookmarkDto);
+
+            // 북마크가 등록되지 않았다면
+            if(userEmploymentBookmarkDto.getUser_employment_bookmark_id() == null){
+                throw new UnableBookmarkException(UNABLE_TO_BOOKMARK);
+            }
+        }
+    }
+
+    public void updateUserLike(Long userId, Long employmentId){
+        UserEmploymentLikeDto userEmploymentLikeDto = new UserEmploymentLikeDto(userId, employmentId);
+        // 유저가 좋아요했다면
+        if(userMapper.checkUserLiked(userId, employmentId) == 1){
+            // 좋아요 해제
+            userMapper.deleteUserLike(userEmploymentLikeDto);
+
+            // 좋아요가 해제되지 않았다면
+            if(userMapper.checkUserBookmarked(userId, employmentId) == 1){
+                throw new UnableLikeException(UNABLE_TO_LIKE);
+            }
+
+        } else {
+            // 좋아요
+            userMapper.registerUserLike(userEmploymentLikeDto);
+
+            // 좋아요가 등록되지 않았다면
+            if(userEmploymentLikeDto.getUser_employment_like_id() == null){
+                throw new UnableLikeException(UNABLE_TO_LIKE);
+            }
+        }
+    }
+
+
 
 
 

@@ -11,17 +11,14 @@ import com.mockrc8.app.global.error.exception.User.UserNotFoundException;
 import com.mockrc8.app.global.oAuth.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.security.Principal;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import static com.mockrc8.app.global.util.InfinityScroll.getScrollCount;
 
 @RestController
 @RequiredArgsConstructor
@@ -71,11 +68,11 @@ public class UserController {
         result.put("userInterestTagList", userInterestTagVoList);
 
         // 유저가 북마크한 채용 목록 가져오기 (최대 4개)
-        List<ReducedEmploymentVo> userEmploymentBookmarkVoList = userService.getUserEmploymentBookmarkVoList(userId, 4);
+        List<ReducedEmploymentVo> userEmploymentBookmarkVoList = userService.getUserEmploymentBookmarkVoList(userId, 4, null);
         result.put("userEmploymentBookmarkList", userEmploymentBookmarkVoList);
 
         // 유저가 좋아요한 채용 목록 가져오기 (최대 4개)
-        List<ReducedEmploymentVo> userEmploymentLikeVoList = userService.getUserEmploymentLikeVoList(userId, 4);
+        List<ReducedEmploymentVo> userEmploymentLikeVoList = userService.getUserEmploymentLikeVoList(userId, 4, null);
         result.put("userEmploymentLikeList", userEmploymentLikeVoList);
 
         BaseResponse<Map<String, Object>> response = new BaseResponse<>(result);
@@ -85,11 +82,19 @@ public class UserController {
 
 
     @GetMapping("/user/{userId}/bookmark")
-    public ResponseEntity<Object> getUserEmploymentBookmarkVoList(@CurrentUser String userEmail, @PathVariable Long userId){
+    public ResponseEntity<Object> getUserEmploymentBookmarkVoList(HttpServletRequest request,
+                                                                  @CurrentUser String userEmail,
+                                                                  @PathVariable Long userId){
+
+        if(userEmail == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
 
         userService.checkUserMatch(userEmail, userId);
 
-        List<ReducedEmploymentVo> reducedEmploymentVoList = userService.getUserEmploymentBookmarkVoList(userId, null);
+        Integer scrollCount = getScrollCount(request);
+
+        List<ReducedEmploymentVo> reducedEmploymentVoList = userService.getUserEmploymentBookmarkVoList(userId, null, scrollCount);
 
         BaseResponse<List<ReducedEmploymentVo>> response = new BaseResponse<>(reducedEmploymentVoList);
 
@@ -98,11 +103,19 @@ public class UserController {
 
 
     @GetMapping("/user/{userId}/like")
-    public ResponseEntity<Object> getUserEmploymentLikeVoList(@CurrentUser String userEmail, @PathVariable Long userId){
+    public ResponseEntity<Object> getUserEmploymentLikeVoList(HttpServletRequest request,
+                                                              @CurrentUser String userEmail,
+                                                              @PathVariable Long userId){
+
+        if(userEmail == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
 
         userService.checkUserMatch(userEmail, userId);
 
-        List<ReducedEmploymentVo> reducedEmploymentVoList = userService.getUserEmploymentLikeVoList(userId, null);
+        Integer scrollCount = getScrollCount(request);
+
+        List<ReducedEmploymentVo> reducedEmploymentVoList = userService.getUserEmploymentLikeVoList(userId, null, scrollCount);
 
         BaseResponse<List<ReducedEmploymentVo>> response = new BaseResponse<>(reducedEmploymentVoList);
         return ResponseEntity.ok(response);

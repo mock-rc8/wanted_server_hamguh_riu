@@ -7,15 +7,22 @@ import com.mockrc8.app.domain.company.dto.Image;
 import com.mockrc8.app.domain.employment.service.EmploymentService;
 import com.mockrc8.app.domain.employment.dto.Employment;
 import com.mockrc8.app.domain.employment.dto.TechSkill;
+import com.mockrc8.app.domain.employment.vo.EmploymentLikeInfoVo;
+import com.mockrc8.app.domain.user.service.UserService;
+import com.mockrc8.app.domain.user.vo.User;
 import com.mockrc8.app.global.config.BaseResponse;
+import com.mockrc8.app.global.error.ErrorCode;
+import com.mockrc8.app.global.error.exception.User.UserNotFoundException;
+import com.mockrc8.app.global.oAuth.CurrentUser;
+import com.mockrc8.app.global.util.InfinityScroll;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+
+import static com.mockrc8.app.global.util.InfinityScroll.*;
 
 @RestController
 @RequestMapping("/employment")
@@ -23,8 +30,8 @@ import java.util.*;
 public class EmploymentController {
 
     private EmploymentService employmentService;
-
     private CompanyService companyService;
+    private UserService userService;
 
     @GetMapping()
     public ResponseEntity<List<Employment>> getEmploymentList(){
@@ -34,10 +41,53 @@ public class EmploymentController {
     }
 
 
-    /*
-    채용 ID로 특정 채용 조회 API
-     */
+    // 유저의 채용 북마크 API
+    @PostMapping("/bookmark/{employmentId}")
+    public ResponseEntity<Object> updateUserBookmark(@CurrentUser String userEmail,
+                                                       @PathVariable Long employmentId){
+        if(userEmail == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
 
+        User user = userService.findUserByEmail(userEmail);
+
+        if (user == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        userService.updateUserBookmark(user.getUser_id(), employmentId);
+
+        BaseResponse<String> response = new BaseResponse<>("ok");
+        return ResponseEntity.ok(response);
+    }
+
+
+    // 유저의 채용 좋아요 API
+    @PostMapping("/like/{employmentId}")
+    public ResponseEntity<Object> updateUserLike(@CurrentUser String userEmail,
+                                                 @PathVariable Long employmentId){
+        if(userEmail == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        User user = userService.findUserByEmail(userEmail);
+
+        if (user == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        userService.updateUserLike(user.getUser_id(), employmentId);
+//        userService.updateUserLike(8L, employmentId);
+
+        // 좋아요 버튼을 누를 때마다 좋아요의 수, 좋아요를 누른 유저들의 프로필 이미지가 필요함
+        EmploymentLikeInfoVo employmentLikeInfoVo = employmentService.getEmploymentLikeInfoVo(employmentId);
+
+        BaseResponse<EmploymentLikeInfoVo> response = new BaseResponse<>(employmentLikeInfoVo);
+        return ResponseEntity.ok(response);
+    }
+
+
+    // 채용 ID로 특정 채용 조회 API
     @GetMapping("/{employmentId}")
     public ResponseEntity<Object> getEmploymentById(@PathVariable Long employmentId){
         Employment employment = employmentService.getEmploymentById(employmentId);
@@ -47,16 +97,13 @@ public class EmploymentController {
         Map<String, Object> result = new HashMap<>();
         result.put("employment", employment);
 
-
         //company
         Company company = companyService.getCompanyById(companyId);
         result.put("company", company);
 
-
         // employment_image
-        List<Image> imageList = employmentService.getEmploymentImageListByCompanyId(employmentId);
+        List<Image> imageList = employmentService.getEmploymentImageListByEmploymentId(employmentId);
         result.put("image", imageList);
-
 
         // company_tag
         List<CompanyTag> companyTagList = companyService.getCompanyTagListByCompanyId(employment.getCompanyId());
@@ -73,8 +120,7 @@ public class EmploymentController {
         while(it.hasNext()){
             CompanyTag companyTag = it.next();
 
-
-            List<Employment> employmentListByCompanyTagName = employmentService.getEmploymentListByCompanyTagName(companyTag.getCompanyTagName(), employmentId, maxCount);
+            List<Employment> employmentListByCompanyTagName = employmentService.getEmploymentListByCompanyTagName(companyTag.getCompanyTagName(), employmentId);
             Iterator<Employment> it2 = employmentListByCompanyTagName.iterator();
 
             while(it2.hasNext()){
@@ -87,42 +133,56 @@ public class EmploymentController {
                     break;
                 }
             }
-
-            
         }
         result.put("associatedEmployment", employmentList);
-
 
         // employment_tech_skill
         List<TechSkill> employmentTechSkillList = employmentService.getEmploymentTechSkillListByEmploymentId(employmentId);
         result.put("techSkill", employmentTechSkillList);
 
+        // 이 채용을 좋아요한 유저의 수, 그 유저들의 프로필 이미지 목록
+        EmploymentLikeInfoVo employmentLikeInfoVo = employmentService.getEmploymentLikeInfoVo(employmentId);
+        result.put("employmentLikeInfo", employmentLikeInfoVo);
 
         BaseResponse<Map<String, Object>> response = new BaseResponse<>(result);
         return ResponseEntity.ok(response);
     }
 
 
+    // 인센티브 테마 채용 목록 조회 API
     @GetMapping("themes/incentive")
-    public ResponseEntity<Object> getEmploymentListByCompensation(){
+    public ResponseEntity<Object> getEmploymentListByCompensation(HttpServletRequest request){
+        // 스크롤 횟수를 헤더에서 찾아내는 메서드
+        // global/util/InfinityScroll 클래스를 static import 해서 사용
+        Integer scrollCount = getScrollCount(request);
+
         String[] tagNames = {"성과급", "상여금", "인센티브"};
-        return employmentService.getEmploymentListByTagNames(tagNames);
+        return employmentService.getEmploymentListByTagNames(tagNames, scrollCount);
     }
 
+    // 연봉 상위 10% 테마 채용 목록 조회 API
     @GetMapping("themes/salarytop")
-    public ResponseEntity<Object> getEmploymentListBySalaryTop(){
+    public ResponseEntity<Object> getEmploymentListBySalaryTop(HttpServletRequest request){
+        Integer scrollCount = getScrollCount(request);
+
         String[] tagNames = {"연봉상위1%", "연봉상위2~5%", "연봉상위6~10%"};
-        return employmentService.getEmploymentListByTagNames(tagNames);
+        return employmentService.getEmploymentListByTagNames(tagNames, scrollCount);
     }
 
+    // 주 4일 근무 테마 채용 목록 조회 API
     @GetMapping("themes/4dayswork")
-    public ResponseEntity<Object> getEmploymentListBy4DaysWork(){
+    public ResponseEntity<Object> getEmploymentListBy4DaysWork(HttpServletRequest request){
+        Integer scrollCount = getScrollCount(request);
+
         String[] tagNames = {"야근없음", "주35시간", "주4일근무"};
-        return employmentService.getEmploymentListByTagNames(tagNames);
+        return employmentService.getEmploymentListByTagNames(tagNames, scrollCount);
     }
 
+    // 마감 임박 테마 채용 목록 조회 API
     @GetMapping("themes/closesoon")
-    public ResponseEntity<Object> getEmploymentListByCloseSoon(){
-        return employmentService.getEmploymentListByCloseSoon();
+    public ResponseEntity<Object> getEmploymentListByCloseSoon(HttpServletRequest request){
+        Integer scrollCount = getScrollCount(request);
+
+        return employmentService.getEmploymentListByCloseSoon(scrollCount);
     }
 }

@@ -65,19 +65,40 @@ mapper 인터페이스의 메서드가 단일 책임 원칙을 만족하도록 �
     </select>
 
 
-    <select id="getUserEmploymentBookmarkVoList" resultType="UserEmploymentBookmarkVo">
-        select * from user_employment_bookmark where user_id = #{userId}
+    <select id="getUserEmploymentBookmarkVoList" resultType="ReducedEmploymentVo">
+
         <if test="maxCount != null">
-            limit #{maxCount}
+            select employment_id, title, location,
+            name as company_name,
+            logo_image_url
+            from (select employment_id from user_employment_bookmark where user_id = #{userId}) as bookmark left outer join employment using(employment_id) left outer join employment_image using(employment_id) left outer join image using(image_id) left outer join company using(company_id) group by employment_id limit 4
         </if>
+
+        <if test="maxCount == null">
+            select employment_id, title, location,
+            name as company_name,
+            (referral_compensation + user_compensation) as compensation,
+            image_url
+            from (select employment_id from user_employment_bookmark where user_id = #{userId}) as bookmark left outer join employment using(employment_id) left outer join employment_image using(employment_id) left outer join image using(image_id) left outer join company using(company_id) group by employment_id
+        </if>
+
     </select>
 
 
-    <select id="getUserEmploymentLikeVoList" resultType="UserEmploymentLikeVo">
-        select * from user_employment_like where user_id = #{userId}
+    <select id="getUserEmploymentLikeVoList" resultType="ReducedEmploymentVo">
         <if test="maxCount != null">
-            limit #{maxCount}
+            select employment_id, title, location,
+            name as company_name,
+            logo_image_url
+            from (select employment_id from user_employment_like where user_id = #{userId}) as bookmark left outer join employment using(employment_id) left outer join employment_image using(employment_id) left outer join image using(image_id) left outer join company using(company_id) group by employment_id limit 4
         </if>
+
+        <if test="maxCount == null">
+            select employment_id, title, location, name as company_name,
+            (referral_compensation + user_compensation) as compensation,
+            image_url from (select employment_id from user_employment_like where user_id = #{userId}) as bookmark left outer join employment using(employment_id) left outer join employment_image using(employment_id) left outer join image using(image_id) left outer join company using(company_id) group by employment_id
+        </if>
+
     </select>
 
     <select id="getUserInterestTagVoByUserId" resultType="UserInterestTagVo">
@@ -87,5 +108,32 @@ mapper 인터페이스의 메서드가 단일 책임 원칙을 만족하도록 �
             limit #{maxCount}
         </if>
     </select>
+
+
+    <select id="checkUserBookmarked" resultType="Integer">
+        select if( exists( select * from user_employment_bookmark where user_id = #{userId} and employment_id = #{employmentId}), 1, 0)
+    </select>
+
+
+    <select id="checkUserLiked" resultType="Integer">
+        select if( exists( select * from user_employment_like where user_id = #{userId} and employment_id = #{employmentId}), 1, 0)
+    </select>
+
+    <insert id="registerUserBookmark" parameterType="UserEmploymentBookmarkDto" useGeneratedKeys="true" keyProperty="user_employment_bookmark_id">
+        insert into user_employment_bookmark(user_id, employment_id) values(#{userEmploymentBookmarkDto.user_id}, #{userEmploymentBookmarkDto.employment_id})
+    </insert>
+
+    <delete id="deleteUserBookmark">
+        delete from user_employment_bookmark where user_id = #{userEmploymentBookmarkDto.user_id} and employment_id = #{userEmploymentBookmarkDto.employment_id}
+    </delete>
+
+
+    <insert id="registerUserLike" parameterType="UserEmploymentLikeDto" useGeneratedKeys="true" keyProperty="user_employment_like_id">
+        insert into user_employment_like(user_id, employment_id) values(#{userEmploymentLikeDto.user_id}, #{userEmploymentLikeDto.employment_id})
+    </insert>
+
+    <delete id="deleteUserLike">
+        delete from user_employment_like where user_id = #{userEmploymentLikeDto.user_id} and employment_id = #{userEmploymentLikeDto.employment_id}
+    </delete>
 
 </mapper>

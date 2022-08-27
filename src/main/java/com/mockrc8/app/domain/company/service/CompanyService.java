@@ -1,5 +1,6 @@
 package com.mockrc8.app.domain.company.service;
 
+import com.github.pagehelper.PageHelper;
 import com.mockrc8.app.domain.company.mapper.CompanyMapper;
 import com.mockrc8.app.domain.company.dto.*;
 import com.mockrc8.app.domain.company.vo.CompanyDetailVo;
@@ -43,7 +44,9 @@ public class CompanyService {
         return companyMapper.getCompanyTagListByIdAndRandomList(hashtagId);
     }
 
-    public List<CompanyListSearchedByTagVo> getCompanyListByTagId(Long hashtagId){
+    public List<CompanyListSearchedByTagVo> getCompanyListByTagId(Long hashtagId, Integer scrollCount){
+        PageHelper.startPage(scrollCount, 10);    // 무한 스크롤 적용
+
         return companyMapper.getCompanyListByTagId(hashtagId);
     }
 
