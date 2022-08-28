@@ -1,8 +1,129 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mockrc8.app.domain.community.mapper.CommunityMapper">
-    <select id="getCommunityPosts" resultType=""
+    <select id="getCommunityPosts" resultMap="getCommunityPostsMapper">
+        select post.post_id,
+               u.user_id,
+               (select count(*) from post_comment where post.post_id = post_comment.post_id) as 'commentCount',
+               (select count(*) from post_like where post.post_id = post_like.post_id) as 'likeCount',
+               profile_image,
+               post.post_id, post.user_id, title, content, post.created_at, post.updated_at
+                ,pt.post_tag_id, pt.name
+        from post
+                 left outer join user u on post.user_id = u.user_id
+                 left outer join post_tag_join ptj on post.post_id = ptj.post_id
+                 left outer join post_tag pt on ptj.post_tag_id = pt.post_tag_id
+        order by created_at DESC;
+    </select>
 
+    <select id="getPostsByTagId" resultMap="getCommunityPostsMapper" parameterType="Long">
+        select post.post_id,
+               u.user_id,
+               (select count(*) from post_comment where post.post_id = post_comment.post_id) as 'commentCount',
+               (select count(*) from post_like where post.post_id = post_like.post_id) as 'likeCount',
+               profile_image,
+               post.post_id, post.user_id, title, content, post.created_at, post.updated_at
+                ,pt.post_tag_id, pt.name
+        from post
+                 left outer join user u on post.user_id = u.user_id
+                 left outer join post_tag_join ptj on post.post_id = ptj.post_id
+                 left outer join post_tag pt on ptj.post_tag_id = pt.post_tag_id
+        where pt.post_tag_id = #{tagId}
+        order by created_at DESC;
+    </select>
 
+    <resultMap id="getCommunityPostsMapper" type="PostDetail">
+        <id property="post_id" column="post_id"/>
+        <result property="user_id" column="user_id"/>
+        <result property="profile_image" column="profile_image"/>
+        <result property="commentCount" column="commentCount"/>
+        <result property="likeCount" column="likeCount"/>
+        <association property="post" javaType="Post">
+            <id property="post_id" column="post_id"/>
+            <result property="user_id" column="user_id"/>
+            <result property="title" column="title"/>
+            <result property="content" column="content"/>
+            <result property="created_at" column="created_at"/>
+            <result property="updated_at" column="updated_at"/>
+        </association>
+        <collection property="tagList" javaType="java.util.List" ofType="PostTag">
+            <result property="post_tag_id" column="post_tag_id"/>
+            <result property="name" column="name"/>
+        </collection>
 
+    </resultMap>
+
+    <select id="getPostLikeCount" resultType="Integer" parameterType="Long">
+        select count(*)
+        from post
+        inner join post_like pl on post.post_id = pl.post_id
+    </select>
+
+    <select id="getPostCommentCount" resultType="Integer" parameterType="Long">
+        select count(*)
+        from post
+                 inner join post_comment pc on post.post_id = pc.post_id
+    </select>
+
+    <select id="getPostById" resultMap="getPostByIdMapper" parameterType="Long">
+        select post.post_id,
+               post.post_id, post.user_id, title, content, post.created_at, post.updated_at,
+               pt.post_tag_id, pt.name,
+               pc.post_comment_id, pc.user_id, pc.post_id, comment, pc.created_at, pc.updated_at
+        from post
+                 left outer join post_tag_join ptj on post.post_id = ptj.post_id
+                 left outer join post_tag pt on ptj.post_tag_id = pt.post_tag_id
+                 inner join post_comment pc on post.post_id = pc.post_id
+        where post.post_id = #{postId}
+    </select>
+
+    <resultMap id="getPostByIdMapper" type="PostDetailWithComments">
+        <id property="post_id" column="post_id"/>
+        <association property="post" javaType="Post">
+            <id property="post_id" column="post_id"/>
+            <result property="user_id" column="user_id"/>
+            <result property="title" column="title"/>
+            <result property="content" column="content"/>
+            <result property="created_at" column="created_at"/>
+            <result property="updated_at" column="updated_at"/>
+        </association>
+        <collection property="tagList" javaType="java.util.List" ofType="PostTag">
+            <result property="post_tag_id" column="post_tag_id"/>
+            <result property="name" column="name"/>
+        </collection>
+        <collection property="commentList" javaType="java.util.List" ofType="Comment">
+            <result property="post_comment_id" column="post_comment_id"/>
+            <result property="user_id" column="user_id"/>
+            <result property="post_id" column="post_id"/>
+            <result property="comment" column="comment"/>
+            <result property="created_at" column="created_at"/>
+            <result property="updated_at" column="updated_at"/>
+        </collection>
+    </resultMap>
+    <insert id="postLanguageSkill" parameterType="Language_skillDto" useGeneratedKeys="true" keyProperty="resume_language_skill_id">
+        insert into resume_language_skill (resume_id, language, level)
+        VALUES (#{resume_id}, #{language}, #{level})
+        <selectKey keyProperty="resume_language_skill_id" resultType="Long" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+    <insert id="registerPost" parameterType="RegisterPostReqDto" useGeneratedKeys="true" keyProperty="post_id">
+        insert into post (user_id, title, content)
+        values (#{user_id}, #{title}, #{content})
+        <selectKey keyProperty="post_id" resultType="Long" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+    <insert id="registerPostTags">
+        insert into post_tag_join (post_id, post_tag_id)
+        VALUES (#{postId}, #{tagId})
+    </insert>
+
+    <insert id="registerPostComment" parameterType="RegisterPostCommentDto" useGeneratedKeys="true" keyProperty="post_comment_id">
+        insert into post_comment (user_id, post_id, comment)
+        values (#{user_id}, #{post_id}, #{comment})
+        <selectKey keyProperty="post_comment_id" resultType="Long" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
 </mapper>
