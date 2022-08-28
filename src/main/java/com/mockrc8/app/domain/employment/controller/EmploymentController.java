@@ -8,6 +8,7 @@ import com.mockrc8.app.domain.employment.service.EmploymentService;
 import com.mockrc8.app.domain.employment.dto.Employment;
 import com.mockrc8.app.domain.employment.dto.TechSkill;
 import com.mockrc8.app.domain.employment.vo.EmploymentLikeInfoVo;
+import com.mockrc8.app.domain.employment.vo.ReducedEmploymentVo;
 import com.mockrc8.app.domain.user.service.UserService;
 import com.mockrc8.app.domain.user.vo.User;
 import com.mockrc8.app.global.config.BaseResponse;
@@ -32,12 +33,6 @@ public class EmploymentController {
     private CompanyService companyService;
     private UserService userService;
 
-//    @GetMapping()
-//    public ResponseEntity<List<Employment>> getEmploymentList(){
-//        List<Employment> employmentList = employmentService.getEmploymentList();
-//
-//        return ResponseEntity.ok(employmentList);
-//    }
 
 
     // 유저의 채용 북마크 API
@@ -210,5 +205,52 @@ public class EmploymentController {
         Integer scrollCount = getScrollCount(request);
 
         return employmentService.getEmploymentListByCloseSoon(scrollCount);
+    }
+
+
+    // 신입 채용 테마 채용 목록 조회 API
+    @GetMapping("themes/newcomer")
+    public ResponseEntity<Object> getEmploymentListByNewcomer(HttpServletRequest request){
+        Integer scrollCount = getScrollCount(request);
+
+        return employmentService.getEmploymentListByNewcomer(scrollCount);
+    }
+
+
+    @GetMapping()
+    public ResponseEntity<Object> getEmploymentList(@RequestParam(required = false) Long jobGroupId,
+                                                    @RequestParam(required = false) Long detailedJobGroupId,
+                                                    @RequestParam(required = false) String sort,
+                                                    @RequestParam(defaultValue = "0") Integer minYear,
+                                                    @RequestParam(defaultValue = "0") Integer maxYear){
+
+
+
+//        List<ReducedEmploymentVo> employmentListByjobGroups;
+//        if(jobGroupId == null && detailedJobGroupId == null){
+//            employmentList = employmentService.getEmploymentList(jobGroupId, detailedJobGroupId);
+//
+//        } else if(detailedJobGroupId == null){
+//            employmentList = employmentService.getEmploymentListByJobGroup(jobGroupId);
+//
+//        } else{
+//            employmentList = employmentService.getEmploymentListByDetailedJobGroup(jobGroupId, detailedJobGroupId);
+//        }
+
+        // 위 방식을 사용하면 자바 코드로 한눈에 파악하기 쉽지만, mapper.xml 파일에 중복되는 쿼리의 양이 크게 늘어납니다.
+        // getEmploymentList메서드에 역할은 하나만 부여하되 mybatis의 if문을 통해 중복되는 코드를 줄였습니다.
+        List<ReducedEmploymentVo> employmentList = employmentService.getEmploymentList(jobGroupId, detailedJobGroupId);
+
+        // 경력
+        List<ReducedEmploymentVo> employmentListByCareerYear = employmentService.getEmploymentListByCareerYear(minYear, maxYear);
+
+        // 기술스택 추가해야 함. 정렬 방식도 지정해야 함.
+
+        employmentList.retainAll(employmentListByCareerYear);
+
+
+        BaseResponse<List<ReducedEmploymentVo>> response = new BaseResponse<>(employmentList);
+        return ResponseEntity.ok(response);
+
     }
 }

@@ -1,6 +1,7 @@
 package com.mockrc8.app.domain.employment.service;
 
 
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.mockrc8.app.domain.company.dto.Image;
 import com.mockrc8.app.domain.company.mapper.CompanyMapper;
@@ -35,14 +36,24 @@ public class EmploymentService {
 
 
     // 채용 목록 전체 조회
-    public List<Employment> getEmploymentList(){
-        return employmentMapper.getEmploymentList();
+    public List<ReducedEmploymentVo> getEmploymentList(Long jobGroupId, Long detailedJobGroupId){
+        return employmentMapper.getEmploymentList(jobGroupId, detailedJobGroupId);
+    }
+
+    // 직군를 가지고 채용 목록 조회
+    public List<ReducedEmploymentVo> getEmploymentListByJobGroup(Long jobGroupId){
+        return employmentMapper.getEmploymentListByJobGroup(jobGroupId);
+    }
+
+    // 직군, 직무를 가지고 채용 목록 조회
+    public List<ReducedEmploymentVo> getEmploymentListByDetailedJobGroup(Long jobGroupId, Long detailedJobGroupId){
+        return employmentMapper.getEmploymentListByDetailedJobGroup(jobGroupId, detailedJobGroupId);
     }
 
     // 축약된 속성을 지닌 채용 목록을 회사 id로 조회
-    public List<Employment> getReducedEmploymentListByCompanyId(Long companyId){
-        return employmentMapper.getReducedEmploymentListByCompanyId(companyId);
-    }
+//    public List<Employment> getReducedEmploymentListByCompanyId(Long companyId){
+//        return employmentMapper.getReducedEmploymentListByCompanyId(companyId);
+//    }
 
     // 태그명으로 채용목록 조회
     public List<Employment> getEmploymentListByCompanyTagName(String companyTagName, Long employmentId){
@@ -50,7 +61,7 @@ public class EmploymentService {
     }
 
 
-    // 성과급, 상여금, 인센티브 태그 조회
+    // 성과급, 상여금, 인센티브 ... 태그 조회
     public ResponseEntity<Object> getEmploymentListByTagNames(String[] tagNames, Integer scrollCount){
         PageHelper.startPage(scrollCount, 10);
         List<ReducedEmploymentVo> reducedEmploymentVoList = employmentMapper.getEmploymentListByTagNames(tagNames);
@@ -59,13 +70,30 @@ public class EmploymentService {
         return ResponseEntity.ok(response);
     }
 
-    // 채용 마감 임박
+    // 채용 마감 임박 테마
     public ResponseEntity<Object> getEmploymentListByCloseSoon(Integer scrollCount){
         PageHelper.startPage(scrollCount, 10);
         List<ReducedEmploymentVo> reducedEmploymentVoList = employmentMapper.getEmploymentListByCloseSoon();
 
         BaseResponse<List<ReducedEmploymentVo>> response = new BaseResponse<>(reducedEmploymentVoList);
         return ResponseEntity.ok(response);
+    }
+
+    // 신입 채용 테마
+    public ResponseEntity<Object> getEmploymentListByNewcomer(Integer scrollCount){
+        PageHelper.startPage(scrollCount, 10);
+        List<ReducedEmploymentVo> reducedEmploymentVoList = employmentMapper.getEmploymentListByCareerYear(0, 0);
+
+        BaseResponse<List<ReducedEmploymentVo>> response = new BaseResponse<>(reducedEmploymentVoList);
+        return ResponseEntity.ok(response);
+    }
+
+
+    // 페이지네이션 적용하지 않았음. 이후에 적용
+    public List<ReducedEmploymentVo> getEmploymentListByCareerYear(Integer minYear, Integer maxYear){
+
+        return employmentMapper.getEmploymentListByCareerYear(minYear, maxYear);
+
     }
 
     /*

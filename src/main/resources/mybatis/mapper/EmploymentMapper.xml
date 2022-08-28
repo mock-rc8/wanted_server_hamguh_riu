@@ -55,9 +55,6 @@
         select * from employment where company_id in (select company_id from company_tag where hashtag_name = #{companyTagName}) and employment_id != #{employmentId}
     </select>
 
-    <select id="getEmploymentList" resultMap="EmploymentDto">
-        select * from employment
-    </select>
 
     <select id="getEmploymentById" parameterType="Long" resultMap="EmploymentDto">
         select * from employment where employment_id = #{employmentId}
@@ -140,6 +137,16 @@
 
     </select>
 
+    <select id="getEmploymentListByCareerYear" resultMap="ReducedEmploymentVo">
+        select employment_id, title, location, name as company_name,
+               (referral_compensation + user_compensation) as compensation,
+               image_id, image_url
+        from (select * from employment where #{minYear} between min_career_year and max_career_year and #{maxYear} between min_career_year and max_career_year) as e
+        left outer join company using(company_id)
+        left outer join
+        (select * from employment_image left outer join image using(image_id) group by employment_id) as img using(employment_id)
+    </select>
+
 
 <!--채용 id로 채용 조회-->
     <select id="getReducedEmploymentByEmploymentId" resultMap="ReducedEmploymentVo">
@@ -151,6 +158,51 @@
                  left outer join image using(image_id)
                  left outer join employment using(employment_id)
                  left outer join company using(company_id)) where employment_id = #{employmentId}
+    </select>
+
+
+    <select id="getEmploymentList" resultMap="ReducedEmploymentVo">
+        select employment_id, title, location, name as company_name,
+               logo_image_url,
+               (referral_compensation + user_compensation) as compensation,
+               image_id, image_url
+        from ((select employment_id, image_id from employment_image group by employment_id) as e_image
+                 left outer join image using(image_id)
+                 left outer join employment using(employment_id)
+                 left outer join company using(company_id))
+                <if test="detailedJobGroupId == null and jobGroupId != null">
+                    where employment_id in (select employment_id from employment_job_group where job_group_id = #{jobGroupId})
+                </if>
+
+                <if test="detailedJobGroupId != null">
+                    where employment_id in (select employment_detailed_job_group.employment_id from
+                    (select * from employment where employment_id in (select employment_id from employment_job_group where job_group_id = #{jobGroupId})) as employment_job_group left outer join employment_detailed_job_group using(employment_id) where detailed_job_group_id = #{detailedJobGroupId})
+                </if>
+    </select>
+
+
+    <select id="getEmploymentListByJobGroup" resultMap="ReducedEmploymentVo">
+        select employment_id, title, location, name as company_name,
+               logo_image_url,
+               (referral_compensation + user_compensation) as compensation,
+               image_id, image_url
+        from ((select employment_id, image_id from employment_image group by employment_id) as e_image
+                 left outer join image using(image_id)
+                 left outer join employment using(employment_id)
+                 left outer join company using(company_id)) where employment_id in (select employment_id from employment_job_group where job_group_id = #{jobGroupId});
+    </select>
+
+
+    <select id="getEmploymentListByDetailedJobGroup" resultMap="ReducedEmploymentVo">
+        select employment_id, title, location, name as company_name,
+               logo_image_url,
+               (referral_compensation + user_compensation) as compensation,
+               image_id, image_url
+        from ((select employment_id, image_id from employment_image group by employment_id) as e_image
+                 left outer join image using(image_id)
+                 left outer join employment using(employment_id)
+                 left outer join company using(company_id)) where employment_id in (select employment_detailed_job_group.employment_id from
+            (select * from employment where employment_id in (select employment_id from employment_job_group where job_group_id = #{jobGroupId})) as employment_job_group left outer join employment_detailed_job_group using(employment_id) where detailed_job_group_id = #{detailedJobGroupId})
     </select>
 
 
