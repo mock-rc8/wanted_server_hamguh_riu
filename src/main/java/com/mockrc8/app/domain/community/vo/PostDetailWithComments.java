@@ -4,10 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostTag {
-    private Long post_tag_id;
-    private String name;
+public class PostDetailWithComments {
+    private Long post_id;
+    private Post post;
+    private List<PostTag> tagList;
+    private List<Comment> commentList;
 }
