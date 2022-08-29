@@ -137,14 +137,35 @@
 
     </select>
 
+
     <select id="getEmploymentListByCareerYear" resultMap="ReducedEmploymentVo">
         select employment_id, title, location, name as company_name,
                (referral_compensation + user_compensation) as compensation,
                image_id, image_url
-        from (select * from employment where #{minYear} between min_career_year and max_career_year and #{maxYear} between min_career_year and max_career_year) as e
+        from (select * from employment where #{minYear} between min_career_year and max_career_year or #{maxYear} between min_career_year and max_career_year) as e
         left outer join company using(company_id)
         left outer join
         (select * from employment_image left outer join image using(image_id) group by employment_id) as img using(employment_id)
+    </select>
+
+
+    <select id="getEmploymentListByTechSkill" resultMap="ReducedEmploymentVo">
+
+        select employment_id, title, location, name as company_name,
+               (referral_compensation + user_compensation) as compensation,
+               image_id, image_url, tech_skill_id
+        from employment_tech_skill left outer join employment using(employment_id)
+                                   left outer join company using(company_id)
+                                   left outer join
+             (select * from employment_image left outer join image using(image_id) group by employment_id) as img using(employment_id)
+        <if test="techSkillId != null">
+            where tech_skill_id in
+            <foreach item="techSkill" collection="array" open="(" close=")" separator=",">
+                #{techSkill}
+            </foreach>
+
+        </if>
+         group by employment_id
     </select>
 
 

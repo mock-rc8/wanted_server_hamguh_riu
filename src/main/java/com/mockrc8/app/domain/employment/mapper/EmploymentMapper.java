@@ -44,4 +44,5 @@ public interface EmploymentMapper {
     Page<ReducedEmploymentVo> getEmploymentListByTagNames(String[] tagNames);
     Page<ReducedEmploymentVo> getEmploymentListByCloseSoon();
     Page<ReducedEmploymentVo> getEmploymentListByCareerYear(Integer minYear, Integer maxYear);
+    Page<ReducedEmploymentVo> getEmploymentListByTechSkill(Long[] techSkillId);
 }

@@ -96,6 +96,13 @@ public class EmploymentService {
 
     }
 
+
+    // 기술 스택으로 조회
+    public List<ReducedEmploymentVo> getEmploymentListByTechSkill(Long[] techSkillId){
+
+        return employmentMapper.getEmploymentListByTechSkill(techSkillId);
+    }
+
     /*
     특정 id로만 조회할 때, 존재하지 않는다면 exception
      */

@@ -221,9 +221,11 @@ public class EmploymentController {
     public ResponseEntity<Object> getEmploymentList(@RequestParam(required = false) Long jobGroupId,
                                                     @RequestParam(required = false) Long detailedJobGroupId,
                                                     @RequestParam(required = false) String sort,
-                                                    @RequestParam(defaultValue = "0") Integer minYear,
-                                                    @RequestParam(defaultValue = "0") Integer maxYear){
+                                                    @RequestParam(required = false) Long[] techSkillId,
+                                                    @RequestParam(required = false) Integer minYear,
+                                                    @RequestParam(required = false) Integer maxYear){
 
+        System.out.println(techSkillId);
 
 
 //        List<ReducedEmploymentVo> employmentListByjobGroups;
@@ -242,11 +244,22 @@ public class EmploymentController {
         List<ReducedEmploymentVo> employmentList = employmentService.getEmploymentList(jobGroupId, detailedJobGroupId);
 
         // 경력
-        List<ReducedEmploymentVo> employmentListByCareerYear = employmentService.getEmploymentListByCareerYear(minYear, maxYear);
+        if(maxYear != null && minYear != null) {
+            List<ReducedEmploymentVo> employmentListByCareerYear = employmentService.getEmploymentListByCareerYear(minYear, maxYear);
+            employmentList.retainAll(employmentListByCareerYear);
+        }
 
-        // 기술스택 추가해야 함. 정렬 방식도 지정해야 함.
+        // 기술스택
+        if(techSkillId != null) {
+            List<ReducedEmploymentVo> employmentListByTechSkill = employmentService.getEmploymentListByTechSkill(techSkillId);
+            employmentList.retainAll(employmentListByTechSkill);
+        }
 
-        employmentList.retainAll(employmentListByCareerYear);
+        // 정렬 방식도 지정해야 함.
+
+
+
+
 
 
         BaseResponse<List<ReducedEmploymentVo>> response = new BaseResponse<>(employmentList);
