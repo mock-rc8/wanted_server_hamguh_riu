@@ -7,6 +7,7 @@ import com.mockrc8.app.domain.resume.dto.Degree.DegreeDto;
 import com.mockrc8.app.domain.resume.dto.Language.Language_skillDto;
 import com.mockrc8.app.domain.resume.dto.Language.Language_testDto;
 import com.mockrc8.app.domain.resume.dto.TechSkill.PostResume_tech_skillDto;
+import com.mockrc8.app.domain.resume.dto.file.PostResumeFileDto;
 import com.mockrc8.app.domain.resume.vo.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -46,4 +47,6 @@ public interface ResumeMapper {
     Long getTechSkillId(String skillName);
 
     void postResumeTechSkills(@Param("resumeId") Long resumeId, @Param("resumeTechSkillId") Long resumeTechSkillId);
+
+    void postResumeFile(PostResumeFileDto postResumeFileDto);
 }

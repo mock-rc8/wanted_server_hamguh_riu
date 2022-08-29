@@ -32,7 +32,11 @@ public enum ErrorCode {
     EMPLOYMENT_TECH_SKILL_NOT_EXIST(400, "E002","EmploymentTechSkill not exists"),
 
     //Image
-    IMAGE_NOT_EXIST(400, "I001", "Image not exists");
+    IMAGE_NOT_EXIST(400, "I001", "Image not exists"),
+
+    FILE_SIZE_EXCEED(400, "F001", "파일 용량 초과"),
+    FILE_UPLOAD_FAIL(400, "F002", "파일 업로드 실패"),
+    FILE_NOT_EXIST(400,"F003", "파일이 없습니다.");
 
 
     private final int status;

@@ -34,6 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user/**").permitAll() // 테스트하기위해 추가했습니다.
                 .antMatchers("/events/**").permitAll()
                 .antMatchers("/community/**").permitAll()
+                .antMatchers("/upload/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtService), UsernamePasswordAuthenticationFilter.class); // jwt 필터 추가
