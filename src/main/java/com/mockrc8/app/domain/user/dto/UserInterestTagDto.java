@@ -1,5 +1,6 @@
 package com.mockrc8.app.domain.user.dto;
 
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
@@ -11,13 +12,15 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 @AllArgsConstructor
 @Builder
 @JsonInclude(NON_NULL)
-public class UserEmploymentLikeDto {
-    private Long user_employment_like_id;
+public class UserInterestTagDto {
+    private Long user_interest_tag_id;
+    private Long tag_id;
     private Long user_id;
-    private Long employment_id;
+    private Long community_tag_id;
+    private String name;
 
-    public UserEmploymentLikeDto(Long user_id, Long employment_id){
+    public UserInterestTagDto(Long user_id, Long tag_id){
         this.user_id = user_id;
-        this.employment_id = employment_id;
+        this.tag_id = tag_id;
     }
 }

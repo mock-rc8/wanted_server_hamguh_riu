@@ -240,10 +240,11 @@ public class EmploymentController {
                                                     @RequestParam(required = false) Integer maxYear,
                                                     @RequestParam(required = false) Long[] tagId){
 
+        String scrollCount = request.getHeader("scrollCount");
 
-        Integer scroll = Integer.parseInt(request.getHeader("scrollCount"));
-        if(scroll == null){
-            scroll = 0;
+        Integer scroll = 0;
+        if(scrollCount != null){
+            scroll = Integer.parseInt(scrollCount);
         }
         // getEmploymentList메서드에 역할은 하나만 부여하되 mybatis의 if문을 통해 중복되는 코드를 줄였습니다.
         // 이 리스트를 기준으로 나머지 조건에 따라 교집합을 구하기 때문에, 여기서 정렬하도록 합니다.
@@ -267,7 +268,13 @@ public class EmploymentController {
             employmentList.retainAll(employmentListByTechSkill);
         }
 
-        employmentList = employmentList.subList(scroll * 10, scroll * 10 + 10);
+        // 무한 스크롤 처리, offset 방식
+        if(employmentList.size() >= scroll * 2 + 2) {
+            employmentList = employmentList.subList(scroll * 2, scroll * 2 + 2);
+        }else{
+            employmentList = employmentList.subList(scroll * 2, employmentList.size());
+        }
+
         HttpHeaders headers = new HttpHeaders();
         headers.set("scrollCount", Integer.toString(scroll + 1));
 

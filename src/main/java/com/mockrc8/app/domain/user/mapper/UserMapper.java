@@ -3,10 +3,7 @@ package com.mockrc8.app.domain.user.mapper;
 import com.github.pagehelper.Page;
 import com.mockrc8.app.domain.employment.vo.EmploymentLikeInfoVo;
 import com.mockrc8.app.domain.employment.vo.ReducedEmploymentVo;
-import com.mockrc8.app.domain.user.dto.UserCompanyFollowDto;
-import com.mockrc8.app.domain.user.dto.UserEmploymentBookmarkDto;
-import com.mockrc8.app.domain.user.dto.UserEmploymentLikeDto;
-import com.mockrc8.app.domain.user.dto.UserRegisterRequestDto;
+import com.mockrc8.app.domain.user.dto.*;
 import com.mockrc8.app.domain.user.vo.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -27,6 +24,7 @@ public interface UserMapper {
     Integer checkUserLiked(Long userId, Long employmentId);
     Integer checkUserBookmarked(Long userId, Long employmentId);
     Integer checkUserCompanyFollowed(Long userId, Long companyId);
+    Integer checkUserInterested(Long userId, Long tagId);
 
     void registerUserLike(@Param("userEmploymentLikeDto") UserEmploymentLikeDto userEmploymentLikeDto);
     void deleteUserLike(@Param("userEmploymentLikeDto") UserEmploymentLikeDto userEmploymentLikeDto);
@@ -36,6 +34,11 @@ public interface UserMapper {
 
     void registerUserCompanyFollow(@Param("userCompanyFollowDto") UserCompanyFollowDto userCompanyFollowDto);
     void deleteUserCompanyFollow(@Param("userCompanyFollowDto") UserCompanyFollowDto userCompanyFollowDto);
+
+
+    void registerUserInterestTag(@Param("userInterestTagDto") UserInterestTagDto userInterestTagDto);
+    void deleteUserInterestTag(@Param("userInterestTagDto") UserInterestTagDto userInterestTagDto);
+
 
     UserProfileVo getUserProfile(Long userId);
     Page<ReducedEmploymentVo> getUserEmploymentBookmarkVoList(Long userId, Integer maxCount);
