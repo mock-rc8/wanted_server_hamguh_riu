@@ -16,6 +16,8 @@ import com.mockrc8.app.global.error.ErrorCode;
 import com.mockrc8.app.global.error.exception.User.UserNotFoundException;
 import com.mockrc8.app.global.oAuth.CurrentUser;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -171,7 +173,7 @@ public class EmploymentController {
 
 
     // 인센티브 테마 채용 목록 조회 API
-    @GetMapping("themes/incentive")
+    @GetMapping("/themes/incentive")
     public ResponseEntity<Object> getEmploymentListByCompensation(HttpServletRequest request){
         // 스크롤 횟수를 헤더에서 찾아내는 메서드
         // global/util/InfinityScroll 클래스를 static import 해서 사용
@@ -182,7 +184,7 @@ public class EmploymentController {
     }
 
     // 연봉 상위 10% 테마 채용 목록 조회 API
-    @GetMapping("themes/salarytop")
+    @GetMapping("/themes/salarytop")
     public ResponseEntity<Object> getEmploymentListBySalaryTop(HttpServletRequest request){
         Integer scrollCount = getScrollCount(request);
 
@@ -191,7 +193,7 @@ public class EmploymentController {
     }
 
     // 주 4일 근무 테마 채용 목록 조회 API
-    @GetMapping("themes/4dayswork")
+    @GetMapping("/themes/4dayswork")
     public ResponseEntity<Object> getEmploymentListBy4DaysWork(HttpServletRequest request){
         Integer scrollCount = getScrollCount(request);
 
@@ -199,8 +201,18 @@ public class EmploymentController {
         return employmentService.getEmploymentListByTagNames(tagNames, scrollCount);
     }
 
+
+    // 재택 근무 테마 채용 목록 조회 API
+    @GetMapping("/themes/workathome")
+    public ResponseEntity<Object> getEmploymentListByWorkAtHome(HttpServletRequest request){
+        Integer scrollCount = getScrollCount(request);
+
+        String[] tagNames = {"유연근무", "재택근무", "원격근무"};
+        return employmentService.getEmploymentListByTagNames(tagNames, scrollCount);
+    }
+
     // 마감 임박 테마 채용 목록 조회 API
-    @GetMapping("themes/closesoon")
+    @GetMapping("/themes/closesoon")
     public ResponseEntity<Object> getEmploymentListByCloseSoon(HttpServletRequest request){
         Integer scrollCount = getScrollCount(request);
 
@@ -209,7 +221,7 @@ public class EmploymentController {
 
 
     // 신입 채용 테마 채용 목록 조회 API
-    @GetMapping("themes/newcomer")
+    @GetMapping("/themes/newcomer")
     public ResponseEntity<Object> getEmploymentListByNewcomer(HttpServletRequest request){
         Integer scrollCount = getScrollCount(request);
 
@@ -217,31 +229,25 @@ public class EmploymentController {
     }
 
 
+    // 채용 목록 검색 API
     @GetMapping()
-    public ResponseEntity<Object> getEmploymentList(@RequestParam(required = false) Long jobGroupId,
+    public ResponseEntity<Object> getEmploymentList(HttpServletRequest request,
+                                                    @RequestParam(required = false) Long jobGroupId,
                                                     @RequestParam(required = false) Long detailedJobGroupId,
-                                                    @RequestParam(required = false) String sort,
+                                                    @RequestParam(defaultValue = "latest") String sort,
                                                     @RequestParam(required = false) Long[] techSkillId,
                                                     @RequestParam(required = false) Integer minYear,
-                                                    @RequestParam(required = false) Integer maxYear){
+                                                    @RequestParam(required = false) Integer maxYear,
+                                                    @RequestParam(required = false) Long[] tagId){
 
-        System.out.println(techSkillId);
 
-
-//        List<ReducedEmploymentVo> employmentListByjobGroups;
-//        if(jobGroupId == null && detailedJobGroupId == null){
-//            employmentList = employmentService.getEmploymentList(jobGroupId, detailedJobGroupId);
-//
-//        } else if(detailedJobGroupId == null){
-//            employmentList = employmentService.getEmploymentListByJobGroup(jobGroupId);
-//
-//        } else{
-//            employmentList = employmentService.getEmploymentListByDetailedJobGroup(jobGroupId, detailedJobGroupId);
-//        }
-
-        // 위 방식을 사용하면 자바 코드로 한눈에 파악하기 쉽지만, mapper.xml 파일에 중복되는 쿼리의 양이 크게 늘어납니다.
+        Integer scroll = Integer.parseInt(request.getHeader("scrollCount"));
+        if(scroll == null){
+            scroll = 0;
+        }
         // getEmploymentList메서드에 역할은 하나만 부여하되 mybatis의 if문을 통해 중복되는 코드를 줄였습니다.
-        List<ReducedEmploymentVo> employmentList = employmentService.getEmploymentList(jobGroupId, detailedJobGroupId);
+        // 이 리스트를 기준으로 나머지 조건에 따라 교집합을 구하기 때문에, 여기서 정렬하도록 합니다.
+        List<ReducedEmploymentVo> employmentList = employmentService.getEmploymentList(jobGroupId, detailedJobGroupId, sort);
 
         // 경력
         if(maxYear != null && minYear != null) {
@@ -255,15 +261,20 @@ public class EmploymentController {
             employmentList.retainAll(employmentListByTechSkill);
         }
 
-        // 정렬 방식도 지정해야 함.
+        // 태그 ( 50명이하, 50명이상, 재택근무, 원격근무 등)
+        if(tagId != null){
+            List<ReducedEmploymentVo> employmentListByTechSkill = employmentService.getEmploymentListByTagId(tagId);
+            employmentList.retainAll(employmentListByTechSkill);
+        }
 
-
-
+        employmentList = employmentList.subList(scroll * 10, scroll * 10 + 10);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("scrollCount", Integer.toString(scroll + 1));
 
 
 
         BaseResponse<List<ReducedEmploymentVo>> response = new BaseResponse<>(employmentList);
-        return ResponseEntity.ok(response);
+        return new ResponseEntity(response, headers, HttpStatus.OK);
 
     }
 }

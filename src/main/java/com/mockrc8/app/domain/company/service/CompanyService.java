@@ -39,7 +39,8 @@ public class CompanyService {
         return ResponseEntity.ok(response);
     }
 
-    // 8-24 조회하는 태그 + 랜덤한 태그 4 목록 조회
+
+    // 조회하는 태그 + 랜덤한 태그 4 목록 조회
     public List<CompanyTag> getCompanyTagListByIdAndRandomList(Long hashtagId){
         return companyMapper.getCompanyTagListByIdAndRandomList(hashtagId);
     }

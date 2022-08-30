@@ -186,7 +186,7 @@
         select employment_id, title, location, name as company_name,
                logo_image_url,
                (referral_compensation + user_compensation) as compensation,
-               image_id, image_url
+               image_id, image_url, created_at
         from ((select employment_id, image_id from employment_image group by employment_id) as e_image
                  left outer join image using(image_id)
                  left outer join employment using(employment_id)
@@ -198,6 +198,14 @@
                 <if test="detailedJobGroupId != null">
                     where employment_id in (select employment_detailed_job_group.employment_id from
                     (select * from employment where employment_id in (select employment_id from employment_job_group where job_group_id = #{jobGroupId})) as employment_job_group left outer join employment_detailed_job_group using(employment_id) where detailed_job_group_id = #{detailedJobGroupId})
+                </if>
+
+                <if test='sort.equals("latest")'>
+                    order by created_at desc
+                </if>
+
+                <if test='sort.equals("compensation")'>
+                    order by compensation desc
                 </if>
     </select>
 
