@@ -3,6 +3,7 @@ package com.mockrc8.app.domain.employment.service;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.mockrc8.app.domain.company.dto.CompanyTag;
 import com.mockrc8.app.domain.company.dto.Image;
 import com.mockrc8.app.domain.company.mapper.CompanyMapper;
 import com.mockrc8.app.domain.employment.mapper.EmploymentMapper;
@@ -36,8 +37,9 @@ public class EmploymentService {
 
 
     // 채용 목록 전체 조회
-    public List<ReducedEmploymentVo> getEmploymentList(Long jobGroupId, Long detailedJobGroupId){
-        return employmentMapper.getEmploymentList(jobGroupId, detailedJobGroupId);
+    public List<ReducedEmploymentVo> getEmploymentList(Long jobGroupId, Long detailedJobGroupId, String sort){
+        return employmentMapper.getEmploymentList(jobGroupId, detailedJobGroupId, sort);
+//        return employmentMapper.getEmploymentList(jobGroupId, detailedJobGroupId);
     }
 
     // 직군를 가지고 채용 목록 조회
@@ -68,6 +70,19 @@ public class EmploymentService {
 
         BaseResponse<List<ReducedEmploymentVo>> response = new BaseResponse<>(reducedEmploymentVoList);
         return ResponseEntity.ok(response);
+    }
+
+
+    // 재사용하기 위해 오버로딩
+    public List<ReducedEmploymentVo> getEmploymentListByTagId(Long[] tagIds){
+        String[] tagNames = new String[3];
+
+        for(int i = 0; i< tagIds.length; i++){
+            CompanyTag companyTag = companyMapper.getCompanyTagById(tagIds[i]);
+            tagNames[i] = companyTag.getCompanyTagName();
+        }
+
+        return employmentMapper.getEmploymentListByTagNames(tagNames);
     }
 
     // 채용 마감 임박 테마

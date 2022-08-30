@@ -28,9 +28,8 @@ public interface CompanyMapper {
     List<Image> getImageListByCompanyId(Long companyId);
 
     //company_tag
+    CompanyTag getCompanyTagById(Long hashtagId);
     List<CompanyTag> getCompanyTagListByCompanyId(Long companyId);
-
-    // 8-24
     Integer checkCompanyTagId(Long companyTagId);
     List<CompanyTag> getCompanyTagListByIdAndRandomList(Long hashtagId);
     Page<CompanyListSearchedByTagVo> getCompanyListByTagId(Long hashtagId);

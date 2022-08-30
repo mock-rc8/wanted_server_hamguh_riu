@@ -260,6 +260,16 @@ public class UserService {
         }
     }
 
+    public void updateUserInterestTag(Long userId, Long[] tagIds){
+        for(Long tagId : tagIds){
+            UserInterestTagDto userInterestTagDto = new UserInterestTagDto(userId, tagId);
+            if(userMapper.checkUserInterested(userId, tagId) == 1){
+                userMapper.deleteUserInterestTag(userInterestTagDto);
+            }else{
+                userMapper.registerUserInterestTag(userInterestTagDto);
+            }
+        }
+    }
 
 
 //    public ResponseEntity<Object> getUserProfile(Long userId){

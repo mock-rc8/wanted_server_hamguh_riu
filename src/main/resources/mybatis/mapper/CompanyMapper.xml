@@ -85,6 +85,9 @@
         select if( exists( select * from company_tag where hashtag_id = #{companyTagId}), 1, 0)
     </select>
 
+    <select id="getCompanyTagById" parameterType="Long" resultMap="CompanyTagDto">
+        select * from company_tag where hashtag_id = #{hashtagId}
+    </select>
 
     <select id="getCompanyTagListByCompanyId" parameterType="Long" resultMap="CompanyTagDto">
         select * from company_tag where company_id = #{companyId}

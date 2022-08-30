@@ -10,10 +10,13 @@ import com.mockrc8.app.global.error.ErrorCode;
 import com.mockrc8.app.global.error.exception.User.UserNotFoundException;
 import com.mockrc8.app.global.oAuth.CurrentUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,6 +122,43 @@ public class UserController {
 
         BaseResponse<List<ReducedEmploymentVo>> response = new BaseResponse<>(reducedEmploymentVoList);
         return ResponseEntity.ok(response);
+    }
+
+
+    @GetMapping("/user/{userId}/interests")
+    public ResponseEntity<Object> getUserInterestTag(@CurrentUser String userEmail,
+                                                     @PathVariable Long userId){
+        if(userEmail == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+        userService.checkUserMatch(userEmail, userId);
+
+
+        List<UserInterestTagVo> userInterestTagVoList = userService.getUserInterestTagVoByUserId(userId, null);
+        BaseResponse<List<UserInterestTagVo>> response = new BaseResponse(userInterestTagVoList);
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    @PostMapping("/user/{userId}/interests")
+    public ResponseEntity<Object> updateUserInterestTag(@CurrentUser String userEmail,
+                                                      @PathVariable Long userId,
+                                                      @RequestParam  Long[] tagIds){
+
+        if(userEmail == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+        userService.checkUserMatch(userEmail, userId);
+
+        userService.updateUserInterestTag(userId, tagIds);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create("/user/" + userId + "/interests"));
+
+        BaseResponse<String> response = new BaseResponse<>("redirect");
+        return new ResponseEntity(response, headers, HttpStatus.MOVED_PERMANENTLY);
+
     }
 
 
