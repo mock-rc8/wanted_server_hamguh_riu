@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
+import java.io.FileNotFoundException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -42,6 +44,13 @@ public class GlobalExceptionHandler {
             MaxUploadSizeExceededException e) {
         logger.info("handleMaxUploadSizeExceededException", e);
         ErrorResponse response = ErrorResponse.of(ErrorCode.FILE_SIZE_EXCEED);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(FileNotFoundException.class)
+    protected ResponseEntity<ErrorResponse> FileNotFoundException(
+            MaxUploadSizeExceededException e) {
+        logger.info("FileNotFoundException", e);
+        ErrorResponse response = ErrorResponse.of(ErrorCode.FILE_NOT_EXIST);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 

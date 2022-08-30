@@ -14,6 +14,7 @@ import com.mockrc8.app.global.error.exception.User.UserNotFoundException;
 import com.mockrc8.app.global.infra.AwsS3Service;
 import com.mockrc8.app.global.oAuth.CurrentUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -144,5 +145,13 @@ public class ResumeController {
     return resumeService.uploadResume(userEmail, category, multipartFile);
     }
 
+    @GetMapping("/download")
+    public ResponseEntity<ByteArrayResource> downloadResume(@CurrentUser String userEmail,
+                                                            @RequestParam("resourcePath") String resourcePath){
+        if(userEmail == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+        return resumeService.downloadResume(userEmail, resourcePath);
+    }
 
 }

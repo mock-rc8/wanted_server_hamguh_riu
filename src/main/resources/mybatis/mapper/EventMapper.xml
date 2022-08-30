@@ -63,4 +63,18 @@
 
     </select>
 
+    <insert id="postEvents" parameterType="EventPostDto" useGeneratedKeys="true" keyProperty="event_id">
+        INSERT INTO event(name, is_free, context, capacity, start_time, end_time, event_thumbnail_image_url)
+            VALUES (#{name}, #{is_free}, #{context}, #{capacity},#{start_time}, #{end_time}, #{event_thumbnail_image_url})
+        <selectKey keyProperty="event_id" resultType="Long" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <insert id="postEventTag">
+        INSERT INTO event_tag_join(event_id, event_tag_id)
+        VALUES (#{eventId}, #{tagId})
+    </insert>
+
+
 </mapper>

@@ -23,7 +23,17 @@
                  inner join insight i on insight_tag_join.insight_id = i.insight_id
                  inner join insight_tag it on insight_tag_join.tag_id = it.tag_id
         where it.tag_id = #{tagId};
-
     </select>
 
+    <insert id="postInsight" parameterType="PostInsightDto" keyProperty="insight_id" useGeneratedKeys="true">
+        insert into insight(insight_url)
+            values (#{insight_url})
+        <selectKey keyProperty="insight_id" resultType="Long" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <insert id="postEventTag">
+        insert into insight_tag_join(tag_id, insight_id) VALUES (#{tagId}, #{insightId})
+    </insert>
 </mapper>

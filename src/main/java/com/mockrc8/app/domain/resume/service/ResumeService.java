@@ -18,8 +18,12 @@ import com.mockrc8.app.global.error.ErrorCode;
 import com.mockrc8.app.global.error.exception.User.UserNotFoundException;
 import com.mockrc8.app.global.error.exception.User.UserNotMatchedException;
 import com.mockrc8.app.global.infra.AwsS3Service;
+import com.mockrc8.app.global.util.CommonUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -175,5 +179,26 @@ public class ResumeService {
         postResumeFileDto.setResume_link(link);
         resumeMapper.postResumeFile(postResumeFileDto);
         return new BaseResponse<>("이력서 파일 등록에 성공했습니다.", postResumeFileDto);
+    }
+
+    public ResponseEntity<ByteArrayResource> downloadResume(String userEmail, String resourcePath) {
+        final User user = userService.findUserByEmail(userEmail);
+        final ResumeWithLink resume = resumeMapper.findResumeByResourcePath(resourcePath);
+        if(!Objects.equals(user.getUser_id(), resume.getUser_id())){
+            throw new UserNotMatchedException(ErrorCode.USER_NOT_MATCH);
+        }
+        byte[] data = awsS3Service.downloadFileV1(resourcePath);
+        ByteArrayResource resource = new ByteArrayResource(data);
+        HttpHeaders headers = buildHeaders(resourcePath, data);
+
+        return ResponseEntity
+                .ok().headers(headers).body(resource);
+    }
+    private HttpHeaders buildHeaders(String resourcePath, byte[] data) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentLength(data.length);
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDisposition(CommonUtils.createContentDisposition(resourcePath));
+        return headers;
     }
 }
