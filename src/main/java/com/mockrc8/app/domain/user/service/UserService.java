@@ -271,6 +271,22 @@ public class UserService {
         }
     }
 
+    public void updateUserExcludedCompany(Long userId, Long[] companyIds){
+        for(Long companyId : companyIds){
+            UserExcludedCompanyDto userExcludedCompanyDto = new UserExcludedCompanyDto(userId, companyId);
+            if(userMapper.checkCompanyExcluded(userId, companyId) == 1){
+                userMapper.deleteUserExcludedCompany(userExcludedCompanyDto);
+            }else{
+                userMapper.registerUserExcludedCompany(userExcludedCompanyDto);
+            }
+        }
+    }
+
+
+    public List<UserExcludedCompanyDto> getUserExcludedCompanyDtoList(Long userId){
+        return userMapper.getUserExcludedCompanyDtoList(userId);
+    }
+
 
 //    public ResponseEntity<Object> getUserProfile(Long userId){
 //        UserProfileVo userProfileVo = userMapper.getUserProfile(userId);

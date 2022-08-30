@@ -21,10 +21,13 @@ public interface UserMapper {
     public int updateRefreshToken(@Param("userId") Long userId, @Param("refreshToken") String refreshToken);
 
     List<UserInterestTagVo> getUserInterestTagVoByUserId(Long userId, Integer maxCount);
+    List<UserExcludedCompanyDto> getUserExcludedCompanyDtoList(Long userId);
+
     Integer checkUserLiked(Long userId, Long employmentId);
     Integer checkUserBookmarked(Long userId, Long employmentId);
     Integer checkUserCompanyFollowed(Long userId, Long companyId);
     Integer checkUserInterested(Long userId, Long tagId);
+    Integer checkCompanyExcluded(Long userId, Long companyId);
 
     void registerUserLike(@Param("userEmploymentLikeDto") UserEmploymentLikeDto userEmploymentLikeDto);
     void deleteUserLike(@Param("userEmploymentLikeDto") UserEmploymentLikeDto userEmploymentLikeDto);
@@ -39,6 +42,8 @@ public interface UserMapper {
     void registerUserInterestTag(@Param("userInterestTagDto") UserInterestTagDto userInterestTagDto);
     void deleteUserInterestTag(@Param("userInterestTagDto") UserInterestTagDto userInterestTagDto);
 
+    void registerUserExcludedCompany(@Param("userExcludedCompanyDto") UserExcludedCompanyDto userExcludedCompanyDto);
+    void deleteUserExcludedCompany(@Param("userExcludedCompanyDto") UserExcludedCompanyDto userExcludedCompanyDto);
 
     UserProfileVo getUserProfile(Long userId);
     Page<ReducedEmploymentVo> getUserEmploymentBookmarkVoList(Long userId, Integer maxCount);
