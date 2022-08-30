@@ -145,4 +145,12 @@
         (#{resumeId}, #{resumeTechSkillId})
     </insert>
 
+    <insert id="postResumeFile" parameterType="PostResumeFileDto" useGeneratedKeys="true" keyProperty="resume_id">
+        insert into resume (user_id, name, write_status, resume_link)
+        VALUES (#{user_id}, #{name}, #{write_status}, #{resume_link})
+        <selectKey keyProperty="resume_id" resultType="Long" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
 </mapper>

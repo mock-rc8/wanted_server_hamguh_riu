@@ -6,14 +6,17 @@ import com.mockrc8.app.domain.resume.dto.Degree.DegreeListDto;
 import com.mockrc8.app.domain.resume.dto.Language.Language_skillDto;
 import com.mockrc8.app.domain.resume.dto.TechSkill.PostResume_tech_skillDto;
 import com.mockrc8.app.domain.resume.dto.TechSkill.Resume_tech_skillDto;
+import com.mockrc8.app.domain.resume.dto.file.PostResumeFileDto;
 import com.mockrc8.app.domain.resume.service.ResumeService;
 import com.mockrc8.app.global.config.BaseResponse;
 import com.mockrc8.app.global.error.ErrorCode;
 import com.mockrc8.app.global.error.exception.User.UserNotFoundException;
+import com.mockrc8.app.global.infra.AwsS3Service;
 import com.mockrc8.app.global.oAuth.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,13 +36,48 @@ public class ResumeController {
         return resumeService.getResumes(userEmail);
     }
 
-    @GetMapping("/{resumeId}")
-    public ResponseEntity<Object> getUserResumeByResumeId(@CurrentUser String userEmail,
+    @GetMapping("/{resumeId}/career")
+    public ResponseEntity<Object> getCareer(@CurrentUser String userEmail,
                                                           @PathVariable Integer resumeId){
         if(userEmail == null){
             throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
         }
-        return resumeService.getResumeDetailById(userEmail,resumeId);
+        return resumeService.getCareer(userEmail,resumeId);
+    }
+
+    @GetMapping("/{resumeId}/degree")
+    public ResponseEntity<Object> getDegree(@CurrentUser String userEmail,
+                                                          @PathVariable Integer resumeId){
+        if(userEmail == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+        return resumeService.getDegree(userEmail,resumeId);
+    }
+    @GetMapping("/{resumeId}/award")
+    public ResponseEntity<Object> getAward(@CurrentUser String userEmail,
+                                            @PathVariable Integer resumeId){
+        if(userEmail == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+        return resumeService.getAward(userEmail,resumeId);
+    }
+
+    @GetMapping("/{resumeId}/tech-skill")
+    public ResponseEntity<Object> getTechSkill(@CurrentUser String userEmail,
+                                           @PathVariable Integer resumeId){
+        if(userEmail == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+        return resumeService.getTechSkills(userEmail,resumeId);
+    }
+
+    @GetMapping("/{resumeId}/language")
+    public ResponseEntity<Object> getLanguage(@CurrentUser String userEmail,
+                                               @PathVariable Integer resumeId){
+        if(userEmail == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+        return resumeService.getLanguage(userEmail,resumeId);
     }
 
     @PostMapping("/{resumeId}/career")
@@ -95,4 +133,16 @@ public class ResumeController {
         dto.setResume_id(resumeId.longValue());
         return resumeService.postResumeTechSkills(dto);
     }
+
+    @PostMapping("/upload")
+    public BaseResponse<PostResumeFileDto> uploadResume(@CurrentUser String userEmail,
+                                             @RequestParam("category") String category,
+                                             @RequestPart(value = "file") MultipartFile multipartFile){
+        if(userEmail == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+    return resumeService.uploadResume(userEmail, category, multipartFile);
+    }
+
+
 }

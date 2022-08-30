@@ -8,7 +8,20 @@ server:
 jasypt:
   encryptor:
     bean: jasyptStringEncryptor
+
 #    password: ${jasypt.encryptor.password}
+
+cloud:
+  aws:
+    stack:
+      auto: false
+    region:
+      static: ap-northeast-2
+    credentials:
+      access-key: AKIA6ALO2TVYISMGZ645
+      secret-key: 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
+    s3:
+      bucket: wanted-server-s3
 
 spring:
   application:
@@ -18,7 +31,6 @@ spring:
     url: jdbc:mysql://wook2-rds.c7vimhuuowv7.ap-northeast-2.rds.amazonaws.com/WantedDB?autoReconnect=true
     username: admin
     password: ENC(QTAiVvnawsT6rdz4sDZE9h9lRIRtJfqA)
-#    password: 79267926
     driver-class-name: com.mysql.cj.jdbc.Driver # mysql 8버전
 
 
@@ -48,6 +60,11 @@ spring:
     init:
       platform: mysql
 
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+
 mybatis:
   type-aliases-package: com.mockrc8.app.domain.**.dto, com.mockrc8.app.domain.**.vo
   mapper-locations: mybatis/mapper/**/*.xml
@@ -60,5 +77,7 @@ pagehelper:
 
 secret.jwt_key :  ENC(6x+KiFvHW/2XYWyFtEg/hKibc2c56qGg)
 secret.db_key  :  ENC(8nb/IMUjJAC79s4NMyfyEXdgh29IvbLa)
-#secret.jwt_key :  7926
-#secret.db_key  :  7926
+
+
+
+

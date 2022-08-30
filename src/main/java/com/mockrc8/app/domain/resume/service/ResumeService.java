@@ -8,6 +8,7 @@ import com.mockrc8.app.domain.resume.dto.Language.Language_skillDto;
 import com.mockrc8.app.domain.resume.dto.Language.Language_testDto;
 import com.mockrc8.app.domain.resume.dto.TechSkill.PostResume_tech_skillDto;
 import com.mockrc8.app.domain.resume.dto.TechSkill.Resume_tech_skillDto;
+import com.mockrc8.app.domain.resume.dto.file.PostResumeFileDto;
 import com.mockrc8.app.domain.resume.mapper.ResumeMapper;
 import com.mockrc8.app.domain.resume.vo.*;
 import com.mockrc8.app.domain.user.service.UserService;
@@ -15,16 +16,20 @@ import com.mockrc8.app.domain.user.vo.User;
 import com.mockrc8.app.global.config.BaseResponse;
 import com.mockrc8.app.global.error.ErrorCode;
 import com.mockrc8.app.global.error.exception.User.UserNotFoundException;
+import com.mockrc8.app.global.error.exception.User.UserNotMatchedException;
+import com.mockrc8.app.global.infra.AwsS3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +37,7 @@ public class ResumeService {
 
     private final UserService userService;
     private final ResumeMapper resumeMapper;
+    private final AwsS3Service awsS3Service;
     public ResponseEntity<Object> getResumes(String userEmail) {
         final User user = userService.findUserByEmail(userEmail);
         if (user == null){
@@ -42,36 +48,61 @@ public class ResumeService {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    public ResponseEntity<Object> getResumeDetailById(String userEmail, Integer resumeId) {
-        final User user = userService.findUserByEmail(userEmail);
-        if (user == null){
-            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
-        }
-        final List<Resume_language_skill> language = getLanguage(resumeId);
-
-        return new ResponseEntity<>(language,HttpStatus.OK);
-    }
-
     public Resume getResumeById(Integer resumeId){
         return resumeMapper.getResumeById(resumeId);
     }
 
-    public List<Resume_award> getAward(Integer resumeId){
-        return resumeMapper.getAward(resumeId);
+    public ResponseEntity<Object> getAward(String userEmail ,Integer resumeId){
+        final User user = userService.findUserByEmail(userEmail);
+        final Resume resume = getResumeById(resumeId);
+        if(Objects.equals(user.getUser_id(), resume.getUser_id())){
+            final List<Resume_award> result = resumeMapper.getAward(resumeId);
+            final BaseResponse<List<Resume_award>> baseResponse = new BaseResponse<>("수상경력 가져오기 요청에 성공했습니다.", result);
+            return new ResponseEntity<>(baseResponse,HttpStatus.OK);
+        }
+        throw new UserNotMatchedException(ErrorCode.USER_NOT_MATCH);
     }
-    public List<Resume_career> getCareer(Integer resumeId){
-        return resumeMapper.getCareer(resumeId);
+    public ResponseEntity<Object> getCareer(String userEmail, Integer resumeId){
+        final User user = userService.findUserByEmail(userEmail);
+        final Resume resume = getResumeById(resumeId);
+        if(Objects.equals(user.getUser_id(), resume.getUser_id())){
+            final List<Resume_career> result = resumeMapper.getCareer(resumeId);
+            final BaseResponse<List<Resume_career>> baseResponse = new BaseResponse<>("경력 가져오기 요청에 성공했습니다.", result);
+            return new ResponseEntity<>(baseResponse,HttpStatus.OK);
+        }
+        throw new UserNotMatchedException(ErrorCode.USER_NOT_MATCH);
     }
 
-    public List<Resume_education_degree> getDegree(Integer resumeId){
-        return resumeMapper.getDegree(resumeId);
+    public ResponseEntity<Object> getDegree(String userEmail ,Integer resumeId){
+        final User user = userService.findUserByEmail(userEmail);
+        final Resume resume = getResumeById(resumeId);
+        if(Objects.equals(user.getUser_id(), resume.getUser_id())){
+            final List<Resume_education_degree> result = resumeMapper.getDegree(resumeId);
+            final BaseResponse<List<Resume_education_degree>> baseResponse = new BaseResponse<>("학위 가져오기 요청에 성공했습니다.", result);
+            return new ResponseEntity<>(baseResponse,HttpStatus.OK);
+        }
+        throw new UserNotMatchedException(ErrorCode.USER_NOT_MATCH);
     }
 
-    public List<Resume_tech_skill> getTechSkills(Integer resumeId){
-        return resumeMapper.getTechSkills(resumeId);
+    public ResponseEntity<Object> getTechSkills(String userEmail,Integer resumeId){
+        final User user = userService.findUserByEmail(userEmail);
+        final Resume resume = getResumeById(resumeId);
+        if(Objects.equals(user.getUser_id(), resume.getUser_id())){
+            final List<Resume_tech_skill> result = resumeMapper.getTechSkills(resumeId);
+            final BaseResponse<List<Resume_tech_skill>> baseResponse = new BaseResponse<>("기술 스킬 가져오기 요청에 성공했습니다.", result);
+            return new ResponseEntity<>(baseResponse,HttpStatus.OK);
+        }
+        throw new UserNotMatchedException(ErrorCode.USER_NOT_MATCH);
     }
-    public List<Resume_language_skill> getLanguage(Integer resumeId){
-        return resumeMapper.getLanguage(resumeId);
+    public ResponseEntity<Object> getLanguage(String userEmail,Integer resumeId){
+        final User user = userService.findUserByEmail(userEmail);
+        final Resume resume = getResumeById(resumeId);
+        if(Objects.equals(user.getUser_id(), resume.getUser_id())){
+            final List<Resume_language_skill> result = resumeMapper.getLanguage(resumeId);
+            final BaseResponse<List<Resume_language_skill>> baseResponse = new BaseResponse<>("어학 경력 가져오기 요청에 성공했습니다.", result);
+            return new ResponseEntity<>(baseResponse,HttpStatus.OK);
+        }
+        throw new UserNotMatchedException(ErrorCode.USER_NOT_MATCH);
     }
 
     @Transactional
@@ -132,5 +163,17 @@ public class ResumeService {
 
         final BaseResponse<Long> response = new BaseResponse<>("이력서 개발 스킬 저장 요청에 성공했습니다", resumeId);
         return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    public BaseResponse<PostResumeFileDto> uploadResume(String userEmail, String category, MultipartFile multipartFile) {
+        final User user = userService.findUserByEmail(userEmail);
+        final String link = awsS3Service.uploadFileV1(category, multipartFile);
+        String resumeName = user.getName() + "/upload/" + UUID.randomUUID();
+        final PostResumeFileDto postResumeFileDto = new PostResumeFileDto();
+        postResumeFileDto.setUser_id(user.getUser_id());
+        postResumeFileDto.setName(resumeName);
+        postResumeFileDto.setResume_link(link);
+        resumeMapper.postResumeFile(postResumeFileDto);
+        return new BaseResponse<>("이력서 파일 등록에 성공했습니다.", postResumeFileDto);
     }
 }
