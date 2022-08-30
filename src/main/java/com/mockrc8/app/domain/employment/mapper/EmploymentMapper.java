@@ -10,6 +10,7 @@ import com.mockrc8.app.domain.employment.vo.EmploymentLikeInfoVo;
 import com.mockrc8.app.domain.employment.vo.ReducedEmploymentVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.lang.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,10 @@ public interface EmploymentMapper {
     Integer checkEmploymentId(Long employmentId);
     List<Employment> getEmploymentListByCompanyTagName(String companyTagName, Long employmentId);
     List<Employment> getReducedEmploymentListByCompanyId(@Param("companyId") Long companyId);
-    List<Employment> getEmploymentList();
+    Page<ReducedEmploymentVo> getEmploymentList(Long jobGroupId, Long detailedJobGroupId);
+    Page<ReducedEmploymentVo> getEmploymentListByJobGroup(Long jobGroupId);
+    Page<ReducedEmploymentVo> getEmploymentListByDetailedJobGroup(Long jobGroupId, Long detailedJobGroupId);
+
     Employment getEmploymentById(Long employmentId);
 
     EmploymentLikeInfoVo getEmploymentLikeInfoVo(Long employmentId);
@@ -39,4 +43,6 @@ public interface EmploymentMapper {
     ReducedEmploymentVo getReducedEmploymentByEmploymentId(Long employmentId);
     Page<ReducedEmploymentVo> getEmploymentListByTagNames(String[] tagNames);
     Page<ReducedEmploymentVo> getEmploymentListByCloseSoon();
+    Page<ReducedEmploymentVo> getEmploymentListByCareerYear(Integer minYear, Integer maxYear);
+    Page<ReducedEmploymentVo> getEmploymentListByTechSkill(Long[] techSkillId);
 }
