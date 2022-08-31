@@ -154,4 +154,28 @@ public class ResumeController {
         return resumeService.downloadResume(userEmail, resourcePath);
     }
 
+    @PatchMapping("/{resumeId}/career")
+    public ResponseEntity<Object> patchResumeCareer(@CurrentUser String userEmail,
+                                                               @PathVariable Integer resumeId,
+                                                               @RequestBody CareerDto dto){
+        if(userEmail == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+        dto.setResume_id(resumeId.longValue());
+        return resumeService.patchResumeCareer(dto);
+    }
+
+    @PatchMapping("/{resumeId}/awards")
+    public ResponseEntity<BaseResponse<ArrayList<Long>>> patchResumeAwards(@CurrentUser String userEmail,
+                                                                          @PathVariable Integer resumeId,
+                                                                          @RequestBody AwardListDto dto){
+        if(userEmail == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+        dto.getAwardDtoList().forEach(acc -> acc.setResume_id(resumeId.longValue()));
+        return resumeService.patchResumeAwards(dto);
+    }
+
+
+
 }
