@@ -158,4 +158,26 @@
         from resume
         where resume_link = #{resourcePath}
     </select>
+
+    <update id="patchResumeCareer" parameterType="CareerDto">
+        update resume_career
+        <if test='start_time != null'> set start_time = #{start_time}, </if>
+        <if test='end_time != null'> set resume_career.end_time = #{end_time}, </if>
+        <if test="company_name != null"> set resume_career.company_name = #{company_name}, </if>
+        <if test="department_name != null"> set resume_career.department_name = #{department_name}, </if>
+        <if test="is_in_service != null"> set resume_career.is_in_service = #{is_in_service} </if>
+        where career_id = #{career_id}
+    </update>
+
+
+    <update id="patchResumeAwards" parameterType="AwardListDto">
+        update resume_award
+        <if test='award_date != null'> set award_date = #{start_time}, </if>
+        <if test='award_title != null'> set resume_award.award_title = #{award_title}, </if>
+        <if test="company_name != null"> set resume_award.award_detail = #{award_detail}, </if>
+        where resume_award_id = #{resume_award_id}
+    </update>
+
+
+
 </mapper>

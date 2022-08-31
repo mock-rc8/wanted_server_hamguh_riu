@@ -201,4 +201,20 @@ public class ResumeService {
         headers.setContentDisposition(CommonUtils.createContentDisposition(resourcePath));
         return headers;
     }
+
+    public ResponseEntity<Object> patchResumeCareer(CareerDto dto) {
+        resumeMapper.patchResumeCareer(dto);
+        final BaseResponse<CareerDto> baseResponse = new BaseResponse<>("커리어 업데이트에 성공했습니다.", dto);
+        return ResponseEntity.ok(baseResponse);
+    }
+
+    @Transactional
+    public ResponseEntity<BaseResponse<ArrayList<Long>>> patchResumeAwards(AwardListDto dtos) {
+        dtos.getAwardDtoList().forEach(resumeMapper::patchResumeAward);
+        final ArrayList<Long> IdList = new ArrayList<>();
+        dtos.getAwardDtoList().forEach(acc -> IdList.add(acc.getResume_award_id()));
+        final BaseResponse<ArrayList<Long>> response = new BaseResponse<>("이력서 수상 및 기타 저장 요청에 성공했습니다", IdList);
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.mockrc8.app.domain.resume.mapper;
 
 import com.mockrc8.app.domain.resume.dto.Award.AwardDto;
+import com.mockrc8.app.domain.resume.dto.Award.AwardListDto;
 import com.mockrc8.app.domain.resume.dto.Career.CareerDto;
 import com.mockrc8.app.domain.resume.dto.Career.Career_accomplishmentDto;
 import com.mockrc8.app.domain.resume.dto.Degree.DegreeDto;
@@ -51,4 +52,8 @@ public interface ResumeMapper {
     void postResumeFile(PostResumeFileDto postResumeFileDto);
 
     ResumeWithLink findResumeByResourcePath(String resourcePath);
+
+    void patchResumeCareer(CareerDto dto);
+
+    void patchResumeAward(AwardDto dto);
 }
