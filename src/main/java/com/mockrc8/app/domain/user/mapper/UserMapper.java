@@ -22,12 +22,16 @@ public interface UserMapper {
 
     List<UserInterestTagVo> getUserInterestTagVoByUserId(Long userId, Integer maxCount);
     List<UserExcludedCompanyDto> getUserExcludedCompanyDtoList(Long userId);
+    UserJobGroupVo getUserJobGroup(Long userId);
+    List<UserDetailedJobGroupVo> getUserDetailedJobGroupList(Long userId, Long jobGroupId);
 
     Integer checkUserLiked(Long userId, Long employmentId);
     Integer checkUserBookmarked(Long userId, Long employmentId);
     Integer checkUserCompanyFollowed(Long userId, Long companyId);
     Integer checkUserInterested(Long userId, Long tagId);
     Integer checkCompanyExcluded(Long userId, Long companyId);
+    Integer checkUserJobGroupExist(Long userId);
+    Integer checkUserDetailedJobGroupExist(Long userId);
 
     void registerUserLike(@Param("userEmploymentLikeDto") UserEmploymentLikeDto userEmploymentLikeDto);
     void deleteUserLike(@Param("userEmploymentLikeDto") UserEmploymentLikeDto userEmploymentLikeDto);

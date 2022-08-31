@@ -36,6 +36,7 @@
         <result property="email" column="email"/>
         <result property="phone_number" column="phone_number"/>
         <result property="profile_image" column="profile_image"/>
+        <result property="career_year" column="career_year"/>
 
 <!--
 이후 지원 현황, 관심 있음 등 구성요소를 추가할때 용이하도록,
@@ -71,7 +72,7 @@ mapper 인터페이스의 메서드가 단일 책임 원칙을 만족하도록 �
             select employment_id, title, location,
             name as company_name,
             logo_image_url
-            from (select employment_id from user_employment_bookmark where user_id = #{userId}) as bookmark left outer join employment using(employment_id) left outer join employment_image using(employment_id) left outer join image using(image_id) left outer join company using(company_id) group by employment_id limit 4
+            from (select employment_id from user_employment_bookmark where user_id = #{userId} and status != 0) as bookmark left outer join employment using(employment_id) left outer join employment_image using(employment_id) left outer join image using(image_id) left outer join company using(company_id) group by employment_id limit 4
         </if>
 
         <if test="maxCount == null">
@@ -79,7 +80,7 @@ mapper 인터페이스의 메서드가 단일 책임 원칙을 만족하도록 �
             name as company_name,
             (referral_compensation + user_compensation) as compensation,
             image_url
-            from (select employment_id from user_employment_bookmark where user_id = #{userId}) as bookmark left outer join employment using(employment_id) left outer join employment_image using(employment_id) left outer join image using(image_id) left outer join company using(company_id) group by employment_id
+            from (select employment_id from user_employment_bookmark where user_id = #{userId} and status != 0) as bookmark left outer join employment using(employment_id) left outer join employment_image using(employment_id) left outer join image using(image_id) left outer join company using(company_id) group by employment_id
         </if>
 
     </select>
@@ -90,92 +91,113 @@ mapper 인터페이스의 메서드가 단일 책임 원칙을 만족하도록 �
             select employment_id, title, location,
             name as company_name,
             logo_image_url
-            from (select employment_id from user_employment_like where user_id = #{userId}) as bookmark left outer join employment using(employment_id) left outer join employment_image using(employment_id) left outer join image using(image_id) left outer join company using(company_id) group by employment_id limit 4
+            from (select employment_id from user_employment_like where user_id = #{userId} and status != 0) as bookmark left outer join employment using(employment_id) left outer join employment_image using(employment_id) left outer join image using(image_id) left outer join company using(company_id) group by employment_id limit 4
         </if>
 
         <if test="maxCount == null">
             select employment_id, title, location, name as company_name,
             (referral_compensation + user_compensation) as compensation,
-            image_url from (select employment_id from user_employment_like where user_id = #{userId}) as bookmark left outer join employment using(employment_id) left outer join employment_image using(employment_id) left outer join image using(image_id) left outer join company using(company_id) group by employment_id
+            image_url from (select employment_id from user_employment_like where user_id = #{userId} and status != 0) as bookmark left outer join employment using(employment_id) left outer join employment_image using(employment_id) left outer join image using(image_id) left outer join company using(company_id) group by employment_id
         </if>
 
     </select>
 
     <select id="getUserInterestTagVoByUserId" resultType="UserInterestTagVo">
         select * from community_tag where community_tag_id in
-            (select tag_id from user_interest_tag where user_id = #{userId})
+            (select tag_id from user_interest_tag where user_id = #{userId} and status != 0)
         <if test="maxCount != null">
             limit #{maxCount}
         </if>
     </select>
 
+    <select id="getUserJobGroup" resultType="UserJobGroupVo">
+        select * from user_job_group left outer join job_group using(job_group_id) where user_id = #{userId} and status != 0
+    </select>
+
+
+    <select id="getUserDetailedJobGroupList" resultType="UserDetailedJobGroupVo">
+        select * from user_detailed_job_group left outer join detailed_job_group using(detailed_job_group_id) where user_id = #{userId} and job_group_id = #{jobGroupId} and status != 0
+    </select>
 
     <select id="checkUserBookmarked" resultType="Integer">
-        select if( exists( select * from user_employment_bookmark where user_id = #{userId} and employment_id = #{employmentId}), 1, 0)
+        select if( exists( select * from user_employment_bookmark where user_id = #{userId} and employment_id = #{employmentId} and status != 0), 1, 0)
     </select>
 
 
     <select id="checkUserLiked" resultType="Integer">
-        select if( exists( select * from user_employment_like where user_id = #{userId} and employment_id = #{employmentId}), 1, 0)
+        select if( exists( select * from user_employment_like where user_id = #{userId} and employment_id = #{employmentId} and status != 0), 1, 0)
     </select>
 
     <select id="checkUserCompanyFollowed" resultType="Integer">
-        select if( exists( select * from user_company_follow where user_id = #{userId} and company_id = #{companyId}), 1, 0)
+        select if( exists( select * from user_company_follow where user_id = #{userId} and company_id = #{companyId} and status != 0), 1, 0)
     </select>
 
     <select id="checkUserInterested" resultType="Integer">
-        select if( exists( select * from user_interest_tag where user_id = #{userId} and tag_id = #{tagId}), 1, 0)
+        select if( exists( select * from user_interest_tag where user_id = #{userId} and tag_id = #{tagId} and status = 1), 1, 0)
     </select>
 
     <select id="checkCompanyExcluded" resultType="Integer">
-        select if( exists( select * from user_excluded_company where user_id = #{userId} and company_id = #{companyId}), 1, 0)
+        select if( exists( select * from user_excluded_company where user_id = #{userId} and company_id = #{companyId} and status != 0), 1, 0)
+    </select>
+
+    <select id="checkUserJobGroupExist" resultType="Integer">
+        select if( exists( select * from user_job_group where user_id = #{userId} and status != 0), 1, 0)
+    </select>
+
+    <select id="checkUserDetailedJobGroupExist" resultType="Integer">
+        select if( exists( select * from user_detailed_job_group where user_id = #{userId} and status != 0), 1, 0)
     </select>
 
     <insert id="registerUserBookmark" parameterType="UserEmploymentBookmarkDto" useGeneratedKeys="true" keyProperty="user_employment_bookmark_id">
         insert into user_employment_bookmark(user_id, employment_id) values(#{userEmploymentBookmarkDto.user_id}, #{userEmploymentBookmarkDto.employment_id})
     </insert>
 
-    <delete id="deleteUserBookmark">
-        delete from user_employment_bookmark where user_id = #{userEmploymentBookmarkDto.user_id} and employment_id = #{userEmploymentBookmarkDto.employment_id}
-    </delete>
+    <update id="deleteUserBookmark">
+        update user_employment_bookmark set status = 0 where user_id = #{userEmploymentBookmarkDto.user_id} and employment_id = #{userEmploymentBookmarkDto.employment_id}
+--         delete from user_employment_bookmark where user_id = #{userEmploymentBookmarkDto.user_id} and employment_id = #{userEmploymentBookmarkDto.employment_id}
+    </update>
 
 
     <insert id="registerUserLike" parameterType="UserEmploymentLikeDto" useGeneratedKeys="true" keyProperty="user_employment_like_id">
         insert into user_employment_like(user_id, employment_id) values(#{userEmploymentLikeDto.user_id}, #{userEmploymentLikeDto.employment_id})
     </insert>
 
-    <delete id="deleteUserLike">
-        delete from user_employment_like where user_id = #{userEmploymentLikeDto.user_id} and employment_id = #{userEmploymentLikeDto.employment_id}
-    </delete>
+    <update id="deleteUserLike">
+        update user_employment_like set status = 0 where user_id = #{userEmploymentLikeDto.user_id} and employment_id = #{userEmploymentLikeDto.employment_id}
+--         delete from user_employment_like where user_id = #{userEmploymentLikeDto.user_id} and employment_id = #{userEmploymentLikeDto.employment_id}
+    </update>
 
 
     <insert id="registerUserCompanyFollow" parameterType="UserCompanyFollowDto" useGeneratedKeys="true" keyProperty="user_company_follow_id">
         insert into user_company_follow(user_id, company_id) values(#{userCompanyFollowDto.user_id}, #{userCompanyFollowDto.company_id})
     </insert>
 
-    <delete id="deleteUserCompanyFollow">
-        delete from user_company_follow where user_id = #{userCompanyFollowDto.user_id} and company_id = #{userCompanyFollowDto.company_id}
-    </delete>
+    <update id="deleteUserCompanyFollow">
+        update user_company_follow set status = 0 where user_id = #{userCompanyFollowDto.user_id} and company_id = #{userCompanyFollowDto.company_id}
+--         delete from user_company_follow where user_id = #{userCompanyFollowDto.user_id} and company_id = #{userCompanyFollowDto.company_id}
+    </update>
 
     <insert id="registerUserInterestTag" parameterType="UserInterestTagDto" useGeneratedKeys="true" keyProperty="user_interest_tag_id">
         insert into user_interest_tag(user_id, tag_id) values(#{userInterestTagDto.user_id}, #{userInterestTagDto.tag_id})
     </insert>
 
-    <delete id="deleteUserInterestTag">
-        delete from user_interest_tag where user_id = #{userInterestTagDto.user_id} and tag_id = #{userInterestTagDto.tag_id}
-    </delete>
+    <update id="deleteUserInterestTag">
+        update user_interest_tag set status = 0 where user_id = #{userInterestTagDto.user_id} and tag_id = #{userInterestTagDto.tag_id}
+--         delete from user_interest_tag where user_id = #{userInterestTagDto.user_id} and tag_id = #{userInterestTagDto.tag_id}
+    </update>
 
 
     <insert id="registerUserExcludedCompany" parameterType="UserExcludedCompanyDto" useGeneratedKeys="true" keyProperty="user_excluded_company_id">
         insert into user_excluded_company(user_id, company_id) values(#{userExcludedCompanyDto.user_id}, #{userExcludedCompanyDto.company_id})
     </insert>
 
-    <delete id="deleteUserExcludedCompany">
-        delete from user_excluded_company where user_id = #{userExcludedCompanyDto.user_id} and company_id = #{userExcludedCompanyDto.company_id}
-    </delete>
+    <update id="deleteUserExcludedCompany">
+        update user_excluded_company set status = 0 where user_id = #{userExcludedCompanyDto.user_id} and company_id = #{userExcludedCompanyDto.company_id}
+--         delete from user_excluded_company where user_id = #{userExcludedCompanyDto.user_id} and company_id = #{userExcludedCompanyDto.company_id}
+    </update>
 
 
     <select id="getUserExcludedCompanyDtoList" parameterType="Long" resultType="UserExcludedCompanyDto">
-        select user_excluded_company_id, company_id, user_id, name from user_excluded_company left outer join company using(company_id) where user_id = #{userId};
+        select user_excluded_company_id, company_id, user_id, name from user_excluded_company left outer join company using(company_id) where user_id = #{userId} and status != 0;
     </select>
 </mapper>

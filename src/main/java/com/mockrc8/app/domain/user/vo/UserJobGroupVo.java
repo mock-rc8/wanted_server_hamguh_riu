@@ -1,13 +1,10 @@
 package com.mockrc8.app.domain.user.vo;
 
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
@@ -16,14 +13,9 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 @AllArgsConstructor
 @Builder
 @JsonInclude(NON_NULL)
-public class UserProfileVo {
+public class UserJobGroupVo {
+    private Long user_job_group_id;
     private Long user_id;
+    private Long job_group_id;
     private String name;
-    private String email;
-    private String phone_number;
-    private String profile_image;
-    private Long career_year;
-
-//    private List<UserEmploymentBookmarkVo> userEmploymentBookmarkVoList;
-//    private List<UserEmploymentLikeVo> userEmploymentLikeVoList;
 }

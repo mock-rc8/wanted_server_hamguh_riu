@@ -52,6 +52,11 @@ public class EmploymentService {
         return employmentMapper.getEmploymentListByDetailedJobGroup(jobGroupId, detailedJobGroupId);
     }
 
+    // 회사 소속 국가를 가지고 채용 목록 조회
+    public List<ReducedEmploymentVo> getEmploymentListByNationId(Long nationId){
+        return employmentMapper.getEmploymentListByNationId(nationId);
+    }
+
     // 축약된 속성을 지닌 채용 목록을 회사 id로 조회
 //    public List<Employment> getReducedEmploymentListByCompanyId(Long companyId){
 //        return employmentMapper.getReducedEmploymentListByCompanyId(companyId);
@@ -104,7 +109,6 @@ public class EmploymentService {
     }
 
 
-    // 페이지네이션 적용하지 않았음. 이후에 적용
     public List<ReducedEmploymentVo> getEmploymentListByCareerYear(Integer minYear, Integer maxYear){
 
         return employmentMapper.getEmploymentListByCareerYear(minYear, maxYear);
@@ -126,6 +130,7 @@ public class EmploymentService {
         if(employmentMapper.checkEmploymentId(employmentId) == 0){
             throw new EmploymentNotExistException(EMPLOYMENT_NOT_EXIST);
         }
+        employmentMapper.raiseViewCount(employmentId); // 조회수 1 증가
         return employmentMapper.getEmploymentById(employmentId);
     }
 

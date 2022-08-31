@@ -30,6 +30,7 @@ public interface EmploymentMapper {
 
     EmploymentLikeInfoVo getEmploymentLikeInfoVo(Long employmentId);
 
+    void raiseViewCount(Long employmentId);
 
     //employment_image
     List<EmploymentImage> getEmploymentImageListByEmploymentId(Long employmentId);
@@ -44,6 +45,7 @@ public interface EmploymentMapper {
     ReducedEmploymentVo getReducedEmploymentByEmploymentId(Long employmentId);
     Page<ReducedEmploymentVo> getEmploymentListByTagNames(String[] tagNames);
     Page<ReducedEmploymentVo> getEmploymentListByCloseSoon();
+    List<ReducedEmploymentVo> getEmploymentListByNationId(Long nationId);
     Page<ReducedEmploymentVo> getEmploymentListByCareerYear(Integer minYear, Integer maxYear);
     Page<ReducedEmploymentVo> getEmploymentListByTechSkill(Long[] techSkillId);
 }
