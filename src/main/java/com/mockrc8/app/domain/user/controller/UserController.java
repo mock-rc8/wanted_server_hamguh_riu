@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.mockrc8.app.global.util.InfinityScroll.getScrollCount;
 
@@ -161,6 +159,48 @@ public class UserController {
 
     }
 
+
+    @GetMapping("/profile/{userId}")
+    public ResponseEntity<Object> getUserExcludedCompany(HttpServletRequest request,
+                                                         @CurrentUser String userEmail,
+                                                         @PathVariable Long userId){
+        if(userEmail == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+        userService.checkUserMatch(userEmail, userId);
+
+        Enumeration<String> headerNames = request.getHeaderNames();
+        Iterator<String> it = headerNames.asIterator();
+        while(it.hasNext()){
+            String next = it.next();
+            System.out.println(next + " : " + request.getHeader(next));
+        }
+
+
+        List<UserExcludedCompanyDto> userExcludedCompanyDtoList = userService.getUserExcludedCompanyDtoList(userId);
+        BaseResponse<List<UserExcludedCompanyDto>> response = new BaseResponse<>(userExcludedCompanyDtoList);
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    @PostMapping("/profile/{userId}")
+    public ResponseEntity<Object> excludeCompany(@CurrentUser String userEmail,
+                                                 @PathVariable Long userId,
+                                                 @RequestParam Long[] companyIds){
+        if(userEmail == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+        userService.checkUserMatch(userEmail, userId);
+
+        userService.updateUserExcludedCompany(userId, companyIds);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create("/profile/" + userId));
+
+        BaseResponse<String> response = new BaseResponse<>("redirect");
+        return new ResponseEntity<>(response, headers, HttpStatus.MOVED_PERMANENTLY);
+    }
 
 
 
