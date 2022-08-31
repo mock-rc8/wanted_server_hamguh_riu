@@ -49,4 +49,6 @@ public interface ResumeMapper {
     void postResumeTechSkills(@Param("resumeId") Long resumeId, @Param("resumeTechSkillId") Long resumeTechSkillId);
 
     void postResumeFile(PostResumeFileDto postResumeFileDto);
+
+    ResumeWithLink findResumeByResourcePath(String resourcePath);
 }

@@ -1,11 +1,12 @@
 package com.mockrc8.app.global.infra;
 
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.*;
+import com.amazonaws.util.IOUtils;
 import com.mockrc8.app.global.error.ErrorCode;
 import com.mockrc8.app.global.error.exception.upload.EmptyFileException;
+import com.mockrc8.app.global.error.exception.upload.FileDownloadFailedException;
+import com.mockrc8.app.global.error.exception.upload.FileNotFoundException;
 import com.mockrc8.app.global.error.exception.upload.FileUploadFailedException;
 import com.mockrc8.app.global.util.CommonUtils;
 import lombok.RequiredArgsConstructor;
@@ -48,4 +49,23 @@ public class AwsS3Service {
             throw new EmptyFileException(ErrorCode.FILE_NOT_EXIST);
         }
     }
+
+    public byte[] downloadFileV1(String resourcePath) {
+        validateFileExistsAtUrl(resourcePath);
+
+        S3Object s3Object = amazonS3Client.getObject(bucketName, resourcePath);
+        S3ObjectInputStream inputStream = s3Object.getObjectContent();
+        try {
+            return IOUtils.toByteArray(inputStream);
+        } catch (IOException e) {
+            throw new FileDownloadFailedException(ErrorCode.FILE_DOWNLOAD_FAIL);
+        }
+    }
+
+    private void validateFileExistsAtUrl(String resourcePath) {
+        if (!amazonS3Client.doesObjectExist(bucketName, resourcePath)) {
+            throw new FileNotFoundException(ErrorCode.FILE_NOT_EXIST);
+        }
+    }
+
 }

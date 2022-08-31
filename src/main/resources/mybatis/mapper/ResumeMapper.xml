@@ -153,4 +153,9 @@
         </selectKey>
     </insert>
 
+    <select id="findResumeByResourcePath" parameterType="String" resultType="ResumeWithLink">
+        select *
+        from resume
+        where resume_link = #{resourcePath}
+    </select>
 </mapper>

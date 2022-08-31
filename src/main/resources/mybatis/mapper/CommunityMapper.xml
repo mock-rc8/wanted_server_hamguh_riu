@@ -126,4 +126,67 @@
             SELECT LAST_INSERT_ID()
         </selectKey>
     </insert>
+
+    <insert id="registerPostLike" parameterType="RegisterPostLikeDto" useGeneratedKeys="true" keyProperty="post_like_id">
+        insert into post_like (user_id, post_id)
+        values (#{user_id}, #{post_id})
+        <selectKey keyProperty="post_like_id" resultType="Long" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+
+    <select id="getPostByUserId" resultMap="getCommunityPostsMapper" parameterType="Long">
+        select post.post_id,
+               u.user_id,
+               (select count(*) from post_comment where post.post_id = post_comment.post_id) as 'commentCount',
+               (select count(*) from post_like where post.post_id = post_like.post_id) as 'likeCount',
+               profile_image,
+               post.post_id, post.user_id, title, content, post.created_at, post.updated_at
+                ,pt.post_tag_id, pt.name
+        from post
+                 left outer join user u on post.user_id = u.user_id
+                 left outer join post_tag_join ptj on post.post_id = ptj.post_id
+                 left outer join post_tag pt on ptj.post_tag_id = pt.post_tag_id
+        where u.user_id = #{userId}
+        order by created_at DESC;
+    </select>
+
+    <select id="getMyComments" parameterType="Long" resultType="">
+        select u.user_id,
+               post_comment_id,
+               u.user_id,
+               post.title,
+               pc.comment, pc.created_at, pc.updated_at,
+               (select count(*) from post_like where post.post_id = post_like.post_id) as 'likeCount',
+               (select count(*) from post_comment where post.post_id = post_comment.post_id) as 'commentCount'
+        from post
+                 left outer join user u on post.user_id = u.user_id
+                 left outer join post_comment pc on post.post_id = pc.post_id
+                 left outer join post_like pl on post.post_id = pl.post_id
+        where u.user_id = #{userId}
+    </select>
+
+    <resultMap id="getMyCommentsMapper" type="GetUserCommentsDto">
+        <result property="user_id" column="user_id"/>
+        <collection property="comments" javaType="java.util.List" ofType="CommentWithPost">
+            <result property="post_comment_id" column="post_comment_id"/>
+            <result property="user_id" column="user_id"/>
+            <result property="post_id" column="post_id"/>
+            <result property="title" column="title"/>
+            <result property="comment" column="comment"/>
+            <result property="created_at" column="created_at"/>
+            <result property="updated_at" column="updated_at"/>
+            <result property="likeCount" column="likeCount"/>
+            <result property="commentCount" column="commentCount"/>
+        </collection>
+    </resultMap>
+
+    <select id="getMyLikes" parameterType="Long" resultType="Post">
+        select post.post_id, post.user_id, title, content, created_at, updated_at
+        from post
+        inner join post_like pl on post.post_id = pl.post_id
+        where pl.user_id = #{userId}
+    </select>
+
 </mapper>
