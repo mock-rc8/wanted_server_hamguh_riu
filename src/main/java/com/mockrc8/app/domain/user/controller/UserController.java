@@ -1,10 +1,11 @@
 package com.mockrc8.app.domain.user.controller;
 
 import com.mockrc8.app.domain.employment.vo.ReducedEmploymentVo;
+import com.mockrc8.app.domain.resume.service.ResumeService;
+import com.mockrc8.app.domain.resume.vo.Resume;
 import com.mockrc8.app.domain.user.dto.*;
 import com.mockrc8.app.domain.user.service.UserService;
-import com.mockrc8.app.domain.user.vo.UserInterestTagVo;
-import com.mockrc8.app.domain.user.vo.UserProfileVo;
+import com.mockrc8.app.domain.user.vo.*;
 import com.mockrc8.app.global.config.BaseResponse;
 import com.mockrc8.app.global.error.ErrorCode;
 import com.mockrc8.app.global.error.exception.User.UserNotFoundException;
@@ -161,30 +162,48 @@ public class UserController {
 
 
     @GetMapping("/profile/{userId}")
-    public ResponseEntity<Object> getUserExcludedCompany(HttpServletRequest request,
-                                                         @CurrentUser String userEmail,
+    public ResponseEntity<Object> getUserExcludedCompany(@CurrentUser String userEmail,
                                                          @PathVariable Long userId){
         if(userEmail == null){
             throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
         }
         userService.checkUserMatch(userEmail, userId);
 
-        Enumeration<String> headerNames = request.getHeaderNames();
-        Iterator<String> it = headerNames.asIterator();
-        while(it.hasNext()){
-            String next = it.next();
-            System.out.println(next + " : " + request.getHeader(next));
+        Map<String, Object> map = new HashMap<>();
+
+
+        // 유저 기본 정보
+        UserProfileVo userProfileVo = userService.getUserProfile(userId);
+        map.put("user", userProfileVo);
+
+
+        // 유저 이력서 정보
+        List<Resume> resumeList = userService.getResumesByUserId(userId);
+        map.put("resume", resumeList);
+
+        // 전문 분야
+        if(userService.checkUserJobGroupExist(userId) == 1) {
+            UserJobGroupVo userJobGroup = userService.getUserJobGroup(userId);
+            List<UserDetailedJobGroupVo> userDetailedJobGroupList = userService.getUserDetailedJobGroupList(userId, userJobGroup.getJob_group_id());
+            map.put("jobGroup", userJobGroup);
+            map.put("detailedJobGroup", userDetailedJobGroupList);
         }
 
+        // 추천인 정보
+        UserProfileVo referralUserProfileVo = userService.getUserReferralId(userEmail);
+        map.put("referralUser", referralUserProfileVo);
 
+        // 유저 제외 기업 정보
         List<UserExcludedCompanyDto> userExcludedCompanyDtoList = userService.getUserExcludedCompanyDtoList(userId);
-        BaseResponse<List<UserExcludedCompanyDto>> response = new BaseResponse<>(userExcludedCompanyDtoList);
+        map.put("userExcludedCompany", userExcludedCompanyDtoList);
+
+        BaseResponse<Map<String, Object>> response = new BaseResponse<>(map);
 
         return ResponseEntity.ok(response);
     }
 
 
-    @PostMapping("/profile/{userId}")
+    @PostMapping("/profile/{userId}/exclude-company")
     public ResponseEntity<Object> excludeCompany(@CurrentUser String userEmail,
                                                  @PathVariable Long userId,
                                                  @RequestParam Long[] companyIds){
@@ -201,9 +220,4 @@ public class UserController {
         BaseResponse<String> response = new BaseResponse<>("redirect");
         return new ResponseEntity<>(response, headers, HttpStatus.MOVED_PERMANENTLY);
     }
-
-
-
-
-
 }

@@ -4,6 +4,8 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.mockrc8.app.domain.employment.mapper.EmploymentMapper;
 import com.mockrc8.app.domain.employment.vo.ReducedEmploymentVo;
+import com.mockrc8.app.domain.resume.mapper.ResumeMapper;
+import com.mockrc8.app.domain.resume.vo.Resume;
 import com.mockrc8.app.domain.user.dto.*;
 import com.mockrc8.app.domain.user.mapper.UserMapper;
 import com.mockrc8.app.domain.user.vo.*;
@@ -33,7 +35,7 @@ import static com.mockrc8.app.global.error.ErrorCode.*;
 public class UserService {
 
     private final UserMapper userMapper;
-    private final EmploymentMapper employmentMapper;
+    private final ResumeMapper resumeMapper;
 
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -139,6 +141,24 @@ public class UserService {
             // 조회하는 유저와 조회 당하는 유저의 id가 일치하지 않는 경우
             throw new UserNotMatchedException(USER_NOT_MATCH);
         }
+    }
+
+    public UserProfileVo getUserReferralId(String userEmail){
+        User user = userMapper.findUserByEmail(userEmail);
+        return userMapper.getUserProfile(user.getReferral_id());
+    }
+
+    public UserJobGroupVo getUserJobGroup(Long userId){
+        return userMapper.getUserJobGroup(userId);
+    }
+
+
+    public List<UserDetailedJobGroupVo> getUserDetailedJobGroupList(Long userId, Long jobGroupId){
+        return userMapper.getUserDetailedJobGroupList(userId, jobGroupId);
+    }
+
+    public Integer checkUserJobGroupExist(Long userId){
+        return userMapper.checkUserJobGroupExist(userId);
     }
 
     // 유저가 해당 채용을 북마크 했다면 1, 아니라면 0 반환
@@ -285,6 +305,11 @@ public class UserService {
 
     public List<UserExcludedCompanyDto> getUserExcludedCompanyDtoList(Long userId){
         return userMapper.getUserExcludedCompanyDtoList(userId);
+    }
+
+
+    public List<Resume> getResumesByUserId(Long userId){
+        return resumeMapper.getResumesByUserId(userId);
     }
 
 

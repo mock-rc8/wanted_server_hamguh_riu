@@ -234,6 +234,7 @@ public class EmploymentController {
     public ResponseEntity<Object> getEmploymentList(HttpServletRequest request,
                                                     @RequestParam(required = false) Long jobGroupId,
                                                     @RequestParam(required = false) Long detailedJobGroupId,
+                                                    @RequestParam(required = false) Long nationId,
                                                     @RequestParam(defaultValue = "latest") String sort,
                                                     @RequestParam(required = false) Long[] techSkillId,
                                                     @RequestParam(required = false) Integer minYear,
@@ -249,6 +250,12 @@ public class EmploymentController {
         // getEmploymentList메서드에 역할은 하나만 부여하되 mybatis의 if문을 통해 중복되는 코드를 줄였습니다.
         // 이 리스트를 기준으로 나머지 조건에 따라 교집합을 구하기 때문에, 여기서 정렬하도록 합니다.
         List<ReducedEmploymentVo> employmentList = employmentService.getEmploymentList(jobGroupId, detailedJobGroupId, sort);
+
+        // 국가
+        if(nationId != null){
+            List<ReducedEmploymentVo> employmentListByNationId = employmentService.getEmploymentListByNationId(nationId);
+            employmentList.retainAll(employmentListByNationId);
+        }
 
         // 경력
         if(maxYear != null && minYear != null) {

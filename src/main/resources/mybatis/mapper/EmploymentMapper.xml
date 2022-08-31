@@ -207,6 +207,10 @@
                 <if test='sort.equals("compensation")'>
                     order by compensation desc
                 </if>
+
+                <if test='sort.equals("viewCount")'>
+                    order by view_count desc
+                </if>
     </select>
 
 
@@ -235,6 +239,17 @@
     </select>
 
 
+    <select id="getEmploymentListByNationId" resultMap="ReducedEmploymentVo">
+        select employment_id, title, location, name as company_name,
+               logo_image_url,
+               (referral_compensation + user_compensation) as compensation,
+               image_id, image_url
+        from ((select employment_id, image_id from employment_image group by employment_id) as e_image
+                 left outer join image using(image_id)
+                 left outer join employment using(employment_id)
+                 left outer join company using(company_id)) where nation_id = #{nationId}
+    </select>
+
     <resultMap id="ReducedEmploymentVo" type="ReducedEmploymentVo">
         <result property="employment_id" column="employment_id"/>
         <result property="title" column="title"/>
@@ -243,4 +258,8 @@
         <result property="compensation" column="compensation"/>
         <result property="image_url" column="image_url"/>
     </resultMap>
+
+    <update id="raiseViewCount">
+        update employment set view_count = (select view_count from employment where employment_id = #{employmentId}) + 1 where employment_id = #{employmentId}
+    </update>
 </mapper>

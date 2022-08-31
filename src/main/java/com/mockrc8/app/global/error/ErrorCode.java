@@ -21,6 +21,8 @@ public enum ErrorCode {
     UNABLE_TO_BOOKMARK(400, "U007", "User cannot change bookmark status"),
     UNABLE_TO_LIKE(400, "U008", "User cannot change like status"),
     UNABLE_TO_FOLLOW(400, "U009", "User cannot change follow status"),
+    USER_JOB_GROUP_NOT_FOUND(400, "U010", "User job group not found"),
+    USER_DETAILED_JOB_GROUP_NOT_FOUND(400, "U011", "User detailed job group not found"),
 
     //Company
     COMPANY_NOT_EXIST(400, "COM001", "Company not exists"),
