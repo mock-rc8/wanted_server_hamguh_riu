@@ -72,7 +72,11 @@ dependencies {
 	//AWS
 	implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.3.1'
 
-	implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter-test:2.2.2")
+	implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter-test:2.1.0")
+
+	//H2 DATABASE
+	runtimeOnly 'com.h2database:h2'
+
 }
 
 tasks.named('test') {
