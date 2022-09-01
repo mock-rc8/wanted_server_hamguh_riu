@@ -56,4 +56,12 @@ public interface ResumeMapper {
     void patchResumeCareer(CareerDto dto);
 
     void patchResumeAward(AwardDto dto);
+
+    void patchResumeDegrees(DegreeDto degreeDto);
+
+    void patchResumeLanguageTest(List<Language_testDto> dto);
+
+    void patchLanguageSkill(Language_skillDto dtos);
+
+    void patchResumeTechSkill(@Param("resumeId") Long resumeId, @Param("resumeTechSkillId") Long resumeTechSkillId);
 }
