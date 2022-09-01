@@ -28,7 +28,8 @@
 
 ## 서버 구조
 
-![제목을 입력해주세요_-001](C:\Users\alsdn\Downloads\제목을 입력해주세요_-001.png)
+![제목을 입력해주세요_-001](https://user-images.githubusercontent.com/59720037/187969676-ac9241ba-3878-4004-9519-6f2bf2cfc525.png)
+
 
 ## API 도메인
 
