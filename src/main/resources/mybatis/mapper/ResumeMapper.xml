@@ -170,7 +170,7 @@
     </update>
 
 
-    <update id="patchResumeAwards" parameterType="AwardListDto">
+    <update id="patchResumeAwards" parameterType="AwardDto">
         update resume_award
         <if test='award_date != null'> set award_date = #{start_time}, </if>
         <if test='award_title != null'> set resume_award.award_title = #{award_title}, </if>
@@ -179,5 +179,26 @@
     </update>
 
 
+    <update id="patchResumeDegrees" parameterType="DegreeDto">
+        update resume_education_degree
+        <if test='start_time != null'> set start_time = #{start_time}, </if>
+        <if test='end_time != null'> set resume_education_degree.end_time = #{end_time}, </if>
+        <if test="degree_name != null"> set resume_education_degree.degree_name = #{degree_name}, </if>
+        <if test="content != null"> set resume_education_degree.content = #{content}, </if>
+         where resume_education_degree_id = #{resume_education_degree_id}
+    </update>
+
+    <update id="patchLanguageSkill" parameterType="Language_skillDto">
+        update resume_language_skill
+        <if test='language != null'> set language = #{language}, </if>
+        <if test='level != null'> set resume_language_skill.level = #{level}, </if>
+        where resume_language_skill_id = #{resume_language_skill_id}
+    </update>
+
+    <update id="patchResumeTechSkill">
+        update resume_tech_skill
+        <if test='resumeTechSkillId != null'> set resume_tech_skill.tech_skill_id = #{resumeTechSkillId}, </if>
+        where resume_id = #{resumeId}
+    </update>
 
 </mapper>

@@ -157,6 +157,10 @@ public class ResumeService {
     public void postResumeLanguageTest(List<Language_testDto> dto){
         resumeMapper.postResumeLanguageTest(dto);
     }
+    @Transactional
+    public void patchResumeLanguageTest(List<Language_testDto> dto){
+        resumeMapper.patchResumeLanguageTest(dto);
+    }
 
     public ResponseEntity<BaseResponse<Long>> postResumeTechSkills(Resume_tech_skillDto dtos) {
         final Long resumeId = dtos.getResume_id();
@@ -209,7 +213,7 @@ public class ResumeService {
     }
 
     @Transactional
-    public ResponseEntity<BaseResponse<ArrayList<Long>>> patchResumeAwards(AwardListDto dtos) {
+    public ResponseEntity<Object> patchResumeAwards(AwardListDto dtos) {
         dtos.getAwardDtoList().forEach(resumeMapper::patchResumeAward);
         final ArrayList<Long> IdList = new ArrayList<>();
         dtos.getAwardDtoList().forEach(acc -> IdList.add(acc.getResume_award_id()));
@@ -217,4 +221,34 @@ public class ResumeService {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @Transactional
+    public ResponseEntity<Object> patchResumeDegrees(DegreeListDto dtos) {
+        dtos.getDegreeDtoList().forEach(resumeMapper::patchResumeDegrees);
+        final ArrayList<Long> IdList = new ArrayList<>();
+        dtos.getDegreeDtoList().forEach(acc -> IdList.add(acc.getResume_education_degree_id()));
+        final BaseResponse<ArrayList<Long>> response = new BaseResponse<>("이력서 학력 수정 요청에 성공했습니다.", IdList);
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity<Object> patchResumeLanguage(Language_skillDto dtos) {
+        resumeMapper.patchLanguageSkill(dtos);
+        final Long language_skill_id = dtos.getResume_language_skill_id();
+        dtos.getLanguageTest().forEach(acc ->
+                acc.setResume_language_skill_id(language_skill_id));
+        final BaseResponse<Long> response = new BaseResponse<>("이력서 외국어 저장 요청에 성공했습니다.", language_skill_id);
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity<BaseResponse<Long>> patchResumeTechSkill(Resume_tech_skillDto dtos) {
+        final Long resumeId = dtos.getResume_id();
+        dtos.getSkillName().forEach(name -> {
+            final Long resumeTechSkillId = resumeMapper.getTechSkillId(name);
+            resumeMapper.patchResumeTechSkill(resumeId,resumeTechSkillId);
+        });
+
+        final BaseResponse<Long> response = new BaseResponse<>("이력서 개발 스킬 수정 요청에 성공했습니다", resumeId);
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
 }

@@ -166,7 +166,7 @@ public class ResumeController {
     }
 
     @PatchMapping("/{resumeId}/awards")
-    public ResponseEntity<BaseResponse<ArrayList<Long>>> patchResumeAwards(@CurrentUser String userEmail,
+    public ResponseEntity<Object> patchResumeAwards(@CurrentUser String userEmail,
                                                                           @PathVariable Integer resumeId,
                                                                           @RequestBody AwardListDto dto){
         if(userEmail == null){
@@ -174,6 +174,39 @@ public class ResumeController {
         }
         dto.getAwardDtoList().forEach(acc -> acc.setResume_id(resumeId.longValue()));
         return resumeService.patchResumeAwards(dto);
+    }
+
+    @PatchMapping("/{resumeId}/degrees")
+    public ResponseEntity<Object> patchResumeDegrees(@CurrentUser String userEmail,
+                                                                           @PathVariable Integer resumeId,
+                                                                           @RequestBody DegreeListDto dto){
+        if(userEmail == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+        dto.getDegreeDtoList().forEach(acc -> acc.setResume_id(resumeId.longValue()));
+        return resumeService.patchResumeDegrees(dto);
+    }
+
+    @PatchMapping("/{resumeId}/language")
+    public ResponseEntity<Object> patchResumeLanguage(@CurrentUser String userEmail,
+                                                                 @PathVariable Integer resumeId,
+                                                                 @RequestBody Language_skillDto dto){
+        if(userEmail == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+        dto.setResume_id(resumeId.longValue());
+        return resumeService.patchResumeLanguage(dto);
+    }
+
+    @PatchMapping("/{resumeId}/tech-skill")
+    public ResponseEntity<BaseResponse<Long>> patchResumeTechSkill(@CurrentUser String userEmail,
+                                                                  @PathVariable Integer resumeId,
+                                                                  @RequestBody Resume_tech_skillDto dto){
+        if(userEmail == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+        dto.setResume_id(resumeId.longValue());
+        return resumeService.patchResumeTechSkill(dto);
     }
 
 
