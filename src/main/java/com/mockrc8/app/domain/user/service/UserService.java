@@ -293,6 +293,7 @@ public class UserService {
 
     public void updateUserExcludedCompany(Long userId, Long[] companyIds){
         for(Long companyId : companyIds){
+            System.out.println(userId + ", " + companyId);
             UserExcludedCompanyDto userExcludedCompanyDto = new UserExcludedCompanyDto(userId, companyId);
             if(userMapper.checkCompanyExcluded(userId, companyId) == 1){
                 userMapper.deleteUserExcludedCompany(userExcludedCompanyDto);
@@ -303,7 +304,7 @@ public class UserService {
     }
 
 
-    public List<UserExcludedCompanyDto> getUserExcludedCompanyDtoList(Long userId){
+    public List<UserExcludedCompanyVo> getUserExcludedCompanyDtoList(Long userId){
         return userMapper.getUserExcludedCompanyDtoList(userId);
     }
 

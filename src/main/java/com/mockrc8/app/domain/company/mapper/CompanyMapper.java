@@ -31,6 +31,7 @@ public interface CompanyMapper {
     CompanyTag getCompanyTagById(Long hashtagId);
     List<CompanyTag> getCompanyTagListByCompanyId(Long companyId);
     Integer checkCompanyTagId(Long companyTagId);
+    Long getCompanyTagId(String tagName);
     List<CompanyTag> getCompanyTagListByIdAndRandomList(Long hashtagId);
     Page<CompanyListSearchedByTagVo> getCompanyListByTagId(Long hashtagId);
     List<CompanyTagGroupedTopicVo> getCompanyTagGroupedByTopic();

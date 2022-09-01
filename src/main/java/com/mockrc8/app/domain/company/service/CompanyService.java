@@ -56,6 +56,7 @@ public class CompanyService {
     }
 
     public void checkCompanyTagId(Long companyTagId){
+        System.out.println(companyTagId);
         Integer isExist = companyMapper.checkCompanyTagId(companyTagId);
         if(isExist == 0){
             throw new CompanyTagNotExistException(COMPANY_TAG_NOT_EXIST);
@@ -129,6 +130,10 @@ public class CompanyService {
         return companyMapper.getCompanyTagListByCompanyId(companyId);
     }
 
+    public Long getCompanyTagId(String tagName){
+
+        return companyMapper.getCompanyTagId(tagName);
+    }
 
     /*
     company_news
@@ -136,4 +141,5 @@ public class CompanyService {
     public List<CompanyNews> getCompanyNewsListByCompanyId(Long companyId){
         return companyMapper.getCompanyNewsListByCompanyId(companyId);
     }
+
 }

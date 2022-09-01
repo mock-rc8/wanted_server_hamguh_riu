@@ -81,6 +81,10 @@
 
 <!--    CompanyTag관련-->
 
+    <select id="getCompanyTagId" parameterType="String" resultType="Long">
+        select hashtag_id from company_tag where hashtag_name = #{tagName} limit 1
+    </select>
+
     <select id="checkCompanyTagId" parameterType="Long" resultType="Integer">
         select if( exists( select * from company_tag where hashtag_id = #{companyTagId}), 1, 0)
     </select>
@@ -108,7 +112,7 @@
                 (select company_id from company_tag where hashtag_name like (select hashtag_name from company_tag where company_tag.hashtag_id = #{hashtagId}))) as company_list
             right outer join
             (select * from company_tag where company_id in (select company_id from company_tag where hashtag_name like
-                (select hashtag_name from company_tag where company_tag.hashtag_id = #{hashtagId}))) as tag_list using(company_id);
+                (select hashtag_name from company_tag where company_tag.hashtag_id = #{hashtagId}))) as tag_list using(company_id)
     </select>
 
     <select id="getCompanyTagGroupedByTopic" resultMap="CompanyTagGroupedTopicVo">

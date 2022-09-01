@@ -169,6 +169,8 @@ public class UserController {
         }
         userService.checkUserMatch(userEmail, userId);
 
+
+
         Map<String, Object> map = new HashMap<>();
 
 
@@ -177,25 +179,28 @@ public class UserController {
         map.put("user", userProfileVo);
 
 
-        // 유저 이력서 정보
-        List<Resume> resumeList = userService.getResumesByUserId(userId);
-        map.put("resume", resumeList);
 
-        // 전문 분야
-        if(userService.checkUserJobGroupExist(userId) == 1) {
-            UserJobGroupVo userJobGroup = userService.getUserJobGroup(userId);
-            List<UserDetailedJobGroupVo> userDetailedJobGroupList = userService.getUserDetailedJobGroupList(userId, userJobGroup.getJob_group_id());
-            map.put("jobGroup", userJobGroup);
-            map.put("detailedJobGroup", userDetailedJobGroupList);
+        if(userService.getResumesByUserId(userId).size() != 0) {
+            // 유저 이력서 정보
+            List<Resume> resumeList = userService.getResumesByUserId(userId);
+            map.put("resume", resumeList);
+
+            // 전문 분야
+            if (userService.checkUserJobGroupExist(userId) == 1) {
+                UserJobGroupVo userJobGroup = userService.getUserJobGroup(userId);
+                List<UserDetailedJobGroupVo> userDetailedJobGroupList = userService.getUserDetailedJobGroupList(userId, userJobGroup.getJob_group_id());
+                map.put("jobGroup", userJobGroup);
+                map.put("detailedJobGroup", userDetailedJobGroupList);
+            }
+
+            // 추천인 정보
+            UserProfileVo referralUserProfileVo = userService.getUserReferralId(userEmail);
+            map.put("referralUser", referralUserProfileVo);
+
+            // 유저 제외 기업 정보
+            List<UserExcludedCompanyVo> userExcludedCompanyDtoList = userService.getUserExcludedCompanyDtoList(userId);
+            map.put("userExcludedCompany", userExcludedCompanyDtoList);
         }
-
-        // 추천인 정보
-        UserProfileVo referralUserProfileVo = userService.getUserReferralId(userEmail);
-        map.put("referralUser", referralUserProfileVo);
-
-        // 유저 제외 기업 정보
-        List<UserExcludedCompanyDto> userExcludedCompanyDtoList = userService.getUserExcludedCompanyDtoList(userId);
-        map.put("userExcludedCompany", userExcludedCompanyDtoList);
 
         BaseResponse<Map<String, Object>> response = new BaseResponse<>(map);
 
@@ -212,6 +217,7 @@ public class UserController {
         }
         userService.checkUserMatch(userEmail, userId);
 
+        System.out.println(userId);
         userService.updateUserExcludedCompany(userId, companyIds);
 
         HttpHeaders headers = new HttpHeaders();

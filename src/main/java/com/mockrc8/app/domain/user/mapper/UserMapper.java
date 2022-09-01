@@ -21,7 +21,7 @@ public interface UserMapper {
     public int updateRefreshToken(@Param("userId") Long userId, @Param("refreshToken") String refreshToken);
 
     List<UserInterestTagVo> getUserInterestTagVoByUserId(Long userId, Integer maxCount);
-    List<UserExcludedCompanyDto> getUserExcludedCompanyDtoList(Long userId);
+    List<UserExcludedCompanyVo> getUserExcludedCompanyDtoList(Long userId);
     UserJobGroupVo getUserJobGroup(Long userId);
     List<UserDetailedJobGroupVo> getUserDetailedJobGroupList(Long userId, Long jobGroupId);
 
