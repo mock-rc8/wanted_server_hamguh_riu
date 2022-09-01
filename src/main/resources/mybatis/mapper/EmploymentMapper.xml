@@ -213,6 +213,28 @@
                 </if>
     </select>
 
+    <select id="getEmploymentListByTitle" resultMap="ReducedEmploymentVo">
+        select employment_id, title, location, name as company_name,
+               logo_image_url,
+               (referral_compensation + user_compensation) as compensation,
+               image_id, image_url, created_at
+        from ((select employment_id, image_id from employment_image group by employment_id) as e_image
+                 left outer join image using(image_id)
+                 left outer join employment using(employment_id)
+                 left outer join company using(company_id)) where title like concat('%', #{title}, '%')
+        <if test='sort.equals("latest")'>
+            order by created_at desc
+        </if>
+
+        <if test='sort.equals("compensation")'>
+            order by compensation desc
+        </if>
+
+        <if test='sort.equals("viewCount")'>
+            order by view_count desc
+        </if>
+    </select>
+
 
     <select id="getEmploymentListByJobGroup" resultMap="ReducedEmploymentVo">
         select employment_id, title, location, name as company_name,

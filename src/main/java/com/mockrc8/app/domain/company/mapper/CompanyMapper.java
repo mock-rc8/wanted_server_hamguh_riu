@@ -17,7 +17,6 @@ public interface CompanyMapper {
     List<Company> getCompanyList();
     Company getCompanyById(@Param("companyId") Long companyId);
 
-
     // company_image
     List<CompanyImage> getCompanyImageListByCompanyId(Long companyId);
 
@@ -34,6 +33,10 @@ public interface CompanyMapper {
     Long getCompanyTagId(String tagName);
     List<CompanyTag> getCompanyTagListByIdAndRandomList(Long hashtagId);
     Page<CompanyListSearchedByTagVo> getCompanyListByTagId(Long hashtagId);
+
+    Page<CompanyListSearchedByTagVo> getCompanyListByCompanyName(String companyName);
+    Integer countCompanyListByCompanyName(String companyName);
+
     List<CompanyTagGroupedTopicVo> getCompanyTagGroupedByTopic();
 
     //company_news

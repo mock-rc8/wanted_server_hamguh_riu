@@ -22,6 +22,7 @@ public interface EmploymentMapper {
     List<Employment> getEmploymentListByCompanyTagName(String companyTagName, Long employmentId);
     List<Employment> getReducedEmploymentListByCompanyId(Long companyId);
     Page<ReducedEmploymentVo> getEmploymentList(Long jobGroupId, Long detailedJobGroupId, String sort);
+    Page<ReducedEmploymentVo> getEmploymentListByTitle(String title, String sort);
 //    Page<ReducedEmploymentVo> getEmploymentList(Long jobGroupId, Long detailedJobGroupId);
     Page<ReducedEmploymentVo> getEmploymentListByJobGroup(Long jobGroupId);
     Page<ReducedEmploymentVo> getEmploymentListByDetailedJobGroup(Long jobGroupId, Long detailedJobGroupId);

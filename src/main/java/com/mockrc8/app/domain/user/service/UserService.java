@@ -304,8 +304,8 @@ public class UserService {
     }
 
 
-    public List<UserExcludedCompanyVo> getUserExcludedCompanyDtoList(Long userId){
-        return userMapper.getUserExcludedCompanyDtoList(userId);
+    public List<UserExcludedCompanyVo> getUserExcludedCompanyVoList(Long userId){
+        return userMapper.getUserExcludedCompanyVoList(userId);
     }
 
 
