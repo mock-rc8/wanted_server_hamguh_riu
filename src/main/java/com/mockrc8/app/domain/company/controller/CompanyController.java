@@ -69,18 +69,23 @@ public class CompanyController {
     회사 태그로 회사 목록 조회 API
     무한 스크롤 적용
      */
-    @GetMapping("/tag/{hashtag_id}")
-    public ResponseEntity<Object> getCompanyTagListByIdAndRandomList(HttpServletRequest request, @PathVariable Long hashtag_id){
+    @GetMapping("/tag/{tagName}")
+    public ResponseEntity<Object> getCompanyTagListByIdAndRandomList(HttpServletRequest request,
+                                                                     @PathVariable String tagName){
 
-        companyService.checkCompanyTagId(hashtag_id);
+        Long companyTagId = companyService.getCompanyTagId(tagName);
+        companyService.checkCompanyTagId(companyTagId);
 
         Integer scrollCount = getScrollCount(request);
 
+
         Map<String, Object> result = new HashMap<>();
-        List<CompanyTag> companyTagList = companyService.getCompanyTagListByIdAndRandomList(hashtag_id);
+
+
+        List<CompanyTag> companyTagList = companyService.getCompanyTagListByIdAndRandomList(companyTagId);
         result.put("searchedTagList", companyTagList);
 
-        List<CompanyListSearchedByTagVo> companyList = companyService.getCompanyListByTagId(hashtag_id, scrollCount);
+        List<CompanyListSearchedByTagVo> companyList = companyService.getCompanyListByTagId(companyTagId, scrollCount);
         result.put("companyList", companyList);
 
         List<CompanyTagGroupedTopicVo> companyTagListGroupedTopic = companyService.getCompanyTagGroupedByTopic();

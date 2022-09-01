@@ -154,7 +154,6 @@ mapper 인터페이스의 메서드가 단일 책임 원칙을 만족하도록 �
 
     <update id="deleteUserBookmark">
         update user_employment_bookmark set status = 0 where user_id = #{userEmploymentBookmarkDto.user_id} and employment_id = #{userEmploymentBookmarkDto.employment_id}
---         delete from user_employment_bookmark where user_id = #{userEmploymentBookmarkDto.user_id} and employment_id = #{userEmploymentBookmarkDto.employment_id}
     </update>
 
 
@@ -164,7 +163,6 @@ mapper 인터페이스의 메서드가 단일 책임 원칙을 만족하도록 �
 
     <update id="deleteUserLike">
         update user_employment_like set status = 0 where user_id = #{userEmploymentLikeDto.user_id} and employment_id = #{userEmploymentLikeDto.employment_id}
---         delete from user_employment_like where user_id = #{userEmploymentLikeDto.user_id} and employment_id = #{userEmploymentLikeDto.employment_id}
     </update>
 
 
@@ -183,21 +181,19 @@ mapper 인터페이스의 메서드가 단일 책임 원칙을 만족하도록 �
 
     <update id="deleteUserInterestTag">
         update user_interest_tag set status = 0 where user_id = #{userInterestTagDto.user_id} and tag_id = #{userInterestTagDto.tag_id}
---         delete from user_interest_tag where user_id = #{userInterestTagDto.user_id} and tag_id = #{userInterestTagDto.tag_id}
     </update>
 
 
-    <insert id="registerUserExcludedCompany" parameterType="UserExcludedCompanyDto" useGeneratedKeys="true" keyProperty="user_excluded_company_id">
+    <insert id="registerUserExcludedCompany" parameterType="UserExcludedCompanyDto">
         insert into user_excluded_company(user_id, company_id) values(#{userExcludedCompanyDto.user_id}, #{userExcludedCompanyDto.company_id})
     </insert>
 
     <update id="deleteUserExcludedCompany">
         update user_excluded_company set status = 0 where user_id = #{userExcludedCompanyDto.user_id} and company_id = #{userExcludedCompanyDto.company_id}
---         delete from user_excluded_company where user_id = #{userExcludedCompanyDto.user_id} and company_id = #{userExcludedCompanyDto.company_id}
     </update>
 
 
-    <select id="getUserExcludedCompanyDtoList" parameterType="Long" resultType="UserExcludedCompanyDto">
-        select user_excluded_company_id, company_id, user_id, name from user_excluded_company left outer join company using(company_id) where user_id = #{userId} and status != 0;
+    <select id="getUserExcludedCompanyDtoList" parameterType="Long" resultType="UserExcludedCompanyVo">
+        select user_excluded_company_id, company_id, user_id, name from user_excluded_company left outer join company using(company_id) where user_id = #{userId} and status != 0
     </select>
 </mapper>
