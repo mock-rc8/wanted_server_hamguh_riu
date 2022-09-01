@@ -282,6 +282,6 @@
     </resultMap>
 
     <update id="raiseViewCount">
-        update employment set view_count = (select view_count from employment where employment_id = #{employmentId}) + 1 where employment_id = #{employmentId}
+        update employment set view_count = view_count + 1 where employment_id = #{employmentId}
     </update>
 </mapper>
