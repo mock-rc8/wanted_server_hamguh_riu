@@ -54,7 +54,7 @@
 
 ## 프로젝트 구조
 
-src
+``` src
     ├─main
     │  ├─java
     │  │  └─com
@@ -96,8 +96,8 @@ src
     │      │  └─mapper - mybatis sql xml 파일
     │      ├─static
     │      └─templates
-
-
+    
+```
 
 ----
 
