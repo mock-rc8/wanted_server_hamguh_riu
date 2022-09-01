@@ -26,7 +26,6 @@ cloud:
 spring:
   application:
     name: wanted-server
-
   datasource:
     url: jdbc:mysql://wook2-rds.c7vimhuuowv7.ap-northeast-2.rds.amazonaws.com/WantedDB?autoReconnect=true
     username: admin
@@ -64,6 +63,7 @@ spring:
     multipart:
       max-file-size: 20MB
       max-request-size: 20MB
+
 
 mybatis:
   type-aliases-package: com.mockrc8.app.domain.**.dto, com.mockrc8.app.domain.**.vo
