@@ -42,6 +42,11 @@ public class EmploymentService {
 //        return employmentMapper.getEmploymentList(jobGroupId, detailedJobGroupId);
     }
 
+    public List<ReducedEmploymentVo> getEmploymentListByTitle(String title, String sort){
+        System.out.println(title);
+        return employmentMapper.getEmploymentListByTitle(title, sort);
+    }
+
     // 직군를 가지고 채용 목록 조회
     public List<ReducedEmploymentVo> getEmploymentListByJobGroup(Long jobGroupId){
         return employmentMapper.getEmploymentListByJobGroup(jobGroupId);

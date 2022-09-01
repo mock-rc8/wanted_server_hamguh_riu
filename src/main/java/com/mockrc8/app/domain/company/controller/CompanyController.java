@@ -150,13 +150,13 @@ public class CompanyController {
 //    }
 
 
-    @PostMapping()
-    public ResponseEntity<Company> registerCompany(@RequestBody Company company){
-        Long companyId = companyService.registerCompany(company);
-
-        Company companyById = companyService.getCompanyById(companyId);
-
-        return ResponseEntity.ok(companyById);
-    }
+//    @PostMapping()
+//    public ResponseEntity<Company> registerCompany(@RequestBody Company company){
+//        Long companyId = companyService.registerCompany(company);
+//
+//        Company companyById = companyService.getCompanyById(companyId);
+//
+//        return ResponseEntity.ok(companyById);
+//    }
 
 }

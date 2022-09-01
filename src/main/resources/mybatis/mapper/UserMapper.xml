@@ -193,7 +193,7 @@ mapper 인터페이스의 메서드가 단일 책임 원칙을 만족하도록 �
     </update>
 
 
-    <select id="getUserExcludedCompanyDtoList" parameterType="Long" resultType="UserExcludedCompanyVo">
+    <select id="getUserExcludedCompanyVoList" parameterType="Long" resultType="UserExcludedCompanyVo">
         select user_excluded_company_id, company_id, user_id, name from user_excluded_company left outer join company using(company_id) where user_id = #{userId} and status != 0
     </select>
 </mapper>

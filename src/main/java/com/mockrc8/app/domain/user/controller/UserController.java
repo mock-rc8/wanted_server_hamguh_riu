@@ -198,11 +198,26 @@ public class UserController {
             map.put("referralUser", referralUserProfileVo);
 
             // 유저 제외 기업 정보
-            List<UserExcludedCompanyVo> userExcludedCompanyDtoList = userService.getUserExcludedCompanyDtoList(userId);
+            List<UserExcludedCompanyVo> userExcludedCompanyDtoList = userService.getUserExcludedCompanyVoList(userId);
             map.put("userExcludedCompany", userExcludedCompanyDtoList);
         }
 
         BaseResponse<Map<String, Object>> response = new BaseResponse<>(map);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/profile/{userId}/exclude-company")
+    public ResponseEntity<Object> getExcludeCompany(@CurrentUser String userEmail,
+                                                    @PathVariable Long userId){
+        if(userEmail == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+        userService.checkUserMatch(userEmail, userId);
+
+        List<UserExcludedCompanyVo> userExcludedCompanyVoList = userService.getUserExcludedCompanyVoList(userId);
+
+        BaseResponse<List<UserExcludedCompanyVo>> response = new BaseResponse<>(userExcludedCompanyVoList);
 
         return ResponseEntity.ok(response);
     }

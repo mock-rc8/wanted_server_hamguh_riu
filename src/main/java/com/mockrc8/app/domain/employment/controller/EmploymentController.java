@@ -4,6 +4,7 @@ import com.mockrc8.app.domain.company.service.CompanyService;
 import com.mockrc8.app.domain.company.dto.Company;
 import com.mockrc8.app.domain.company.dto.CompanyTag;
 import com.mockrc8.app.domain.company.dto.Image;
+import com.mockrc8.app.domain.company.vo.CompanyListSearchedByTagVo;
 import com.mockrc8.app.domain.employment.service.EmploymentService;
 import com.mockrc8.app.domain.employment.dto.Employment;
 import com.mockrc8.app.domain.employment.dto.TechSkill;
@@ -22,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.URI;
 import java.util.*;
 
 import static com.mockrc8.app.global.util.InfinityScroll.*;

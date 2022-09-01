@@ -115,6 +115,16 @@
                 (select hashtag_name from company_tag where company_tag.hashtag_id = #{hashtagId}))) as tag_list using(company_id)
     </select>
 
+    <select id="getCompanyListByCompanyName" parameterType="String" resultMap="CompanyListSearchedByTagVo">
+        select * from
+            company left outer join company_tag using(company_id) where company.name like concat('%',#{companyName},'%') group by company.company_id
+    </select>
+
+    <select id="countCompanyListByCompanyName" parameterType="String" resultType="Integer">
+        select count(distinct(company_id)) from
+            company left outer join company_tag using(company_id) where company.name like concat('%',#{companyName},'%')
+    </select>
+
     <select id="getCompanyTagGroupedByTopic" resultMap="CompanyTagGroupedTopicVo">
         select * from
             (select * from company_tag_topic) as topic
@@ -178,7 +188,7 @@
         <result property="name" column="name"/>
         <result property="description" column="description"/>
 
-        <collection property="companyTagList" javaType="java.util.ArrayList" ofType="CompanyTag">
+        <collection property="companyTagList" javaType="java.util.List" ofType="CompanyTag">
             <result property="companyTagId" column="hashtag_id"/>
             <result property="companyTagName" column="hashtag_name"/>
         </collection>
