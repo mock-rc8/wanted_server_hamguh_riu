@@ -105,10 +105,8 @@ public class SearchController {
         }
 
         // 페이징 처리, offset 방식
-        if(employmentList.size() >= scroll * 2 + 2) {
-            employmentList = employmentList.subList(scroll * 2, scroll * 2 + 2);
-        }else{
-            employmentList = employmentList.subList(scroll * 2, employmentList.size());
+        if(employmentList.size() >= scroll * 6 + 6) {
+            employmentList = employmentList.subList(scroll * 6, scroll * 6 + 6);
         }
 
 
