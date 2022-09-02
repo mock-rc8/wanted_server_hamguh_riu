@@ -10,10 +10,7 @@ import com.mockrc8.app.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,7 +31,7 @@ public class EventController {
     }
 
     @PostMapping()
-    public ResponseEntity<Object> postEvents(EventPostDto eventPostDto){
+    public ResponseEntity<Object> postEvents(@RequestBody EventPostDto eventPostDto){
         return eventService.postEvents(eventPostDto);
     }
 
