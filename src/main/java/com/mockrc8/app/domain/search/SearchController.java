@@ -104,10 +104,18 @@ public class SearchController {
             employmentList.retainAll(employmentListByTechSkill);
         }
 
+        System.out.println(employmentList.size());
+
         // 페이징 처리, offset 방식
-        if(employmentList.size() >= scroll * 6 + 6) {
-            employmentList = employmentList.subList(scroll * 6, scroll * 6 + 6);
+        if(employmentList.size() >= (scroll - 1) * 6) {
+            if(employmentList.size() <= (scroll * 6)){
+                employmentList = employmentList.subList((scroll - 1) * 6, employmentList.size());
+            }else {
+                System.out.println(employmentList.size());
+                employmentList = employmentList.subList((scroll - 1) * 6, scroll * 6);
+            }
         }
+
 
 
         HttpHeaders headers = new HttpHeaders();
